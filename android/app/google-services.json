@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "715141404075",
-    "project_id": "nsrit-canteen",
-    "storage_bucket": "nsrit-canteen.firebasestorage.app"
+    "project_number": "15355084605",
+    "project_id": "nsrit-canteen-4de4b",
+    "storage_bucket": "nsrit-canteen-4de4b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:715141404075:android:2f568859af1fe00f356eee",
+        "mobilesdk_app_id": "1:15355084605:android:10b75113bed73f5b640f54",
         "android_client_info": {
           "package_name": "com.example.nsrit_canteen"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAciuUcSSKKKCWbXJDdYcgz_eN0pP5NisI"
+          "current_key": "AIzaSyAUhLwIVb3wgA6rWsCBIIDKnXhfIaLcF54"
         }
       ],
       "services": {

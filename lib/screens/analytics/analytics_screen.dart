@@ -67,7 +67,10 @@ class AnalyticsScreen extends StatelessWidget {
               _MetricTile(
                 title: 'Purchases',
                 value: Formatters.currency(
-                  purchases.fold(0.0, (sum, purchase) => sum + purchase.totalAmount),
+                  purchases.fold(
+                    0.0,
+                    (sum, purchase) => sum + purchase.totalAmount,
+                  ),
                 ),
                 icon: Icons.shopping_cart_rounded,
               ),
@@ -76,7 +79,10 @@ class AnalyticsScreen extends StatelessWidget {
                 value: Formatters.number(
                   movements
                       .where((movement) => movement.quantity < 0)
-                      .fold(0.0, (sum, movement) => sum + movement.quantity.abs()),
+                      .fold(
+                        0.0,
+                        (sum, movement) => sum + movement.quantity.abs(),
+                      ),
                 ),
                 icon: Icons.fastfood_rounded,
               ),
@@ -118,7 +124,10 @@ class AnalyticsScreen extends StatelessWidget {
               ),
               SimpleBarChart(
                 title: 'Category-wise Consumption',
-                points: _categoryConsumption(movements, inventoryProvider.items),
+                points: _categoryConsumption(
+                  movements,
+                  inventoryProvider.items,
+                ),
                 color: Colors.green,
               ),
               SimpleBarChart(
@@ -158,7 +167,9 @@ class AnalyticsScreen extends StatelessWidget {
       final label = '${sale.soldAt.day}/${sale.soldAt.month}';
       grouped[label] = (grouped[label] ?? 0) + sale.quantity;
     }
-    return grouped.entries.map((entry) => ChartPoint(label: entry.key, value: entry.value)).toList();
+    return grouped.entries
+        .map((entry) => ChartPoint(label: entry.key, value: entry.value))
+        .toList();
   }
 
   List<ChartPoint> _salesByWeek(List<SaleModel> sales) {
@@ -168,7 +179,9 @@ class AnalyticsScreen extends StatelessWidget {
       final end = now.subtract(Duration(days: i * 7));
       final start = end.subtract(const Duration(days: 6));
       final value = sales
-          .where((sale) => !sale.soldAt.isBefore(start) && !sale.soldAt.isAfter(end))
+          .where(
+            (sale) => !sale.soldAt.isBefore(start) && !sale.soldAt.isAfter(end),
+          )
           .fold(0.0, (sum, sale) => sum + sale.quantity);
       points.add(ChartPoint(label: 'W${4 - i}', value: value));
     }
@@ -178,19 +191,26 @@ class AnalyticsScreen extends StatelessWidget {
   List<ChartPoint> _monthlyRevenue(List<SaleModel> sales) {
     final grouped = <String, double>{};
     for (final sale in sales) {
-      final label = '${sale.soldAt.month}/${sale.soldAt.year.toString().substring(2)}';
+      final label =
+          '${sale.soldAt.month}/${sale.soldAt.year.toString().substring(2)}';
       grouped[label] = (grouped[label] ?? 0) + sale.totalAmount;
     }
-    return grouped.entries.take(6).map((entry) => ChartPoint(label: entry.key, value: entry.value)).toList();
+    return grouped.entries
+        .take(6)
+        .map((entry) => ChartPoint(label: entry.key, value: entry.value))
+        .toList();
   }
 
   List<ChartPoint> _purchaseTrend(List<PurchaseModel> purchases) {
     final grouped = <String, double>{};
     for (final purchase in purchases) {
-      final label = '${purchase.purchaseDate.day}/${purchase.purchaseDate.month}';
+      final label =
+          '${purchase.purchaseDate.day}/${purchase.purchaseDate.month}';
       grouped[label] = (grouped[label] ?? 0) + purchase.totalAmount;
     }
-    return grouped.entries.map((entry) => ChartPoint(label: entry.key, value: entry.value)).toList();
+    return grouped.entries
+        .map((entry) => ChartPoint(label: entry.key, value: entry.value))
+        .toList();
   }
 
   List<ChartPoint> _movementByItem(List<dynamic> movements) {
@@ -204,14 +224,17 @@ class AnalyticsScreen extends StatelessWidget {
     return _topEntries(grouped);
   }
 
-  List<ChartPoint> _categoryConsumption(List<dynamic> movements, List<InventoryItem> items) {
+  List<ChartPoint> _categoryConsumption(
+    List<dynamic> movements,
+    List<InventoryItem> items,
+  ) {
     final grouped = <String, double>{};
     for (final movement in movements) {
       if (movement.quantity >= 0) continue;
       final item = items.cast<InventoryItem?>().firstWhere(
-            (item) => item?.itemName == movement.itemName,
-            orElse: () => null,
-          );
+        (item) => item?.itemName == movement.itemName,
+        orElse: () => null,
+      );
       final category = item?.category ?? 'Prepared Food';
       grouped[category] = (grouped[category] ?? 0) + movement.quantity.abs();
     }
@@ -221,11 +244,17 @@ class AnalyticsScreen extends StatelessWidget {
   List<ChartPoint> _sellingItems(List<SaleModel> sales, {required bool top}) {
     final grouped = <String, double>{};
     for (final sale in sales) {
-      grouped[sale.menuItemName] = (grouped[sale.menuItemName] ?? 0) + sale.quantity;
+      grouped[sale.menuItemName] =
+          (grouped[sale.menuItemName] ?? 0) + sale.quantity;
     }
     final entries = grouped.entries.toList()
-      ..sort((a, b) => top ? b.value.compareTo(a.value) : a.value.compareTo(b.value));
-    return entries.take(5).map((entry) => ChartPoint(label: entry.key, value: entry.value)).toList();
+      ..sort(
+        (a, b) => top ? b.value.compareTo(a.value) : a.value.compareTo(b.value),
+      );
+    return entries
+        .take(5)
+        .map((entry) => ChartPoint(label: entry.key, value: entry.value))
+        .toList();
   }
 
   List<ChartPoint> _supplierPerformance(List<PurchaseModel> purchases) {
@@ -246,17 +275,19 @@ class AnalyticsScreen extends StatelessWidget {
   }
 
   List<ChartPoint> _topEntries(Map<String, double> grouped) {
-    final entries = grouped.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    return entries.take(6).map((entry) => ChartPoint(label: entry.key, value: entry.value)).toList();
+    final entries = grouped.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return entries
+        .take(6)
+        .map((entry) => ChartPoint(label: entry.key, value: entry.value))
+        .toList();
   }
 }
 
 class _RangeSelector extends StatelessWidget {
   final AdminProvider adminProvider;
 
-  const _RangeSelector({
-    required this.adminProvider,
-  });
+  const _RangeSelector({required this.adminProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +307,8 @@ class _RangeSelector extends StatelessWidget {
               context: context,
               firstDate: DateTime(now.year - 2),
               lastDate: DateTime(now.year + 1),
-              initialDateRange: adminProvider.customRange ??
+              initialDateRange:
+                  adminProvider.customRange ??
                   DateTimeRange(
                     start: now.subtract(const Duration(days: 30)),
                     end: now,
@@ -323,7 +355,9 @@ class _MetricTile extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.12),
+              backgroundColor: theme.colorScheme.primary.withValues(
+                alpha: 0.12,
+              ),
               child: Icon(icon, color: theme.colorScheme.primary),
             ),
             const SizedBox(width: 12),

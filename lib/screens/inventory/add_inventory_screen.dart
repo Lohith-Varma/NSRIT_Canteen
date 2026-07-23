@@ -15,11 +15,7 @@ class AddInventoryScreen extends StatefulWidget {
   final InventoryItem? item;
   final String? initialCategory;
 
-  const AddInventoryScreen({
-    super.key,
-    this.item,
-    this.initialCategory,
-  });
+  const AddInventoryScreen({super.key, this.item, this.initialCategory});
 
   bool get isEditing => item != null;
 
@@ -48,15 +44,30 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
     super.initState();
     final item = widget.item;
     _nameController = TextEditingController(text: item?.itemName ?? '');
-    _quantityController = TextEditingController(text: _initialNumber(item?.quantity));
-    _minimumStockController = TextEditingController(text: _initialNumber(item?.minimumStock, fallback: '10'));
-    _maximumStockController = TextEditingController(text: _initialNumber(item?.maximumStock));
+    _quantityController = TextEditingController(
+      text: _initialNumber(item?.quantity),
+    );
+    _minimumStockController = TextEditingController(
+      text: _initialNumber(item?.minimumStock, fallback: '10'),
+    );
+    _maximumStockController = TextEditingController(
+      text: _initialNumber(item?.maximumStock),
+    );
     _supplierController = TextEditingController(text: item?.supplier ?? '');
-    _purchasePriceController = TextEditingController(text: _initialNumber(item?.purchasePrice));
-    _sellingPriceController = TextEditingController(text: _initialNumber(item?.sellingPrice));
-    _storageLocationController = TextEditingController(text: item?.storageLocation ?? '');
+    _purchasePriceController = TextEditingController(
+      text: _initialNumber(item?.purchasePrice),
+    );
+    _sellingPriceController = TextEditingController(
+      text: _initialNumber(item?.sellingPrice),
+    );
+    _storageLocationController = TextEditingController(
+      text: item?.storageLocation ?? '',
+    );
     _notesController = TextEditingController(text: item?.notes ?? '');
-    _selectedCategory = item?.category ?? widget.initialCategory ?? AppConstants.categories.first;
+    _selectedCategory =
+        item?.category ??
+        widget.initialCategory ??
+        AppConstants.categories.first;
     _selectedUnit = item?.unit ?? AppConstants.units.first;
     _expiryDate = item?.expiryDate;
   }
@@ -165,8 +176,7 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
     final availableCategories = {
       ...categories,
       _selectedCategory,
-    }.where((category) => category.trim().isNotEmpty).toList()
-      ..sort();
+    }.where((category) => category.trim().isNotEmpty).toList()..sort();
 
     return Scaffold(
       appBar: AppBar(
@@ -178,12 +188,16 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _SectionTitle(title: 'Item Details', icon: Icons.inventory_2_rounded),
+              _SectionTitle(
+                title: 'Item Details',
+                icon: Icons.inventory_2_rounded,
+              ),
               CustomTextField(
                 label: 'Item Name',
                 hint: 'e.g. Sona Masoori Rice',
                 controller: _nameController,
-                validator: (value) => Validators.validateRequired(value, 'Item name'),
+                validator: (value) =>
+                    Validators.validateRequired(value, 'Item name'),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -213,8 +227,14 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
                     child: CustomTextField(
                       label: 'Quantity',
                       controller: _quantityController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) => Validators.validateNumber(value, 'Quantity', allowZero: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (value) => Validators.validateNumber(
+                        value,
+                        'Quantity',
+                        allowZero: true,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -243,8 +263,14 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
                     child: CustomTextField(
                       label: 'Minimum Stock',
                       controller: _minimumStockController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) => Validators.validateNumber(value, 'Minimum stock', allowZero: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (value) => Validators.validateNumber(
+                        value,
+                        'Minimum stock',
+                        allowZero: true,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -252,14 +278,23 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
                     child: CustomTextField(
                       label: 'Maximum Stock',
                       controller: _maximumStockController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) => Validators.validateNumber(value, 'Maximum stock', allowZero: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (value) => Validators.validateNumber(
+                        value,
+                        'Maximum stock',
+                        allowZero: true,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              _SectionTitle(title: 'Pricing & Supplier', icon: Icons.payments_rounded),
+              _SectionTitle(
+                title: 'Pricing & Supplier',
+                icon: Icons.payments_rounded,
+              ),
               CustomTextField(
                 label: 'Supplier',
                 hint: 'Supplier name',
@@ -272,8 +307,14 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
                     child: CustomTextField(
                       label: 'Purchase Price',
                       controller: _purchasePriceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) => Validators.validateNumber(value, 'Purchase price', allowZero: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (value) => Validators.validateNumber(
+                        value,
+                        'Purchase price',
+                        allowZero: true,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -281,14 +322,23 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
                     child: CustomTextField(
                       label: 'Selling Price',
                       controller: _sellingPriceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) => Validators.validateNumber(value, 'Selling price', allowZero: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (value) => Validators.validateNumber(
+                        value,
+                        'Selling price',
+                        allowZero: true,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              _SectionTitle(title: 'Storage', icon: Icons.store_mall_directory_rounded),
+              _SectionTitle(
+                title: 'Storage',
+                icon: Icons.store_mall_directory_rounded,
+              ),
               CustomTextField(
                 label: 'Storage Location',
                 hint: 'e.g. Dry Store Rack A',
@@ -299,7 +349,11 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.event_rounded),
                 title: const Text('Expiry Date'),
-                subtitle: Text(_expiryDate == null ? 'Not set' : Formatters.formatDate(_expiryDate!)),
+                subtitle: Text(
+                  _expiryDate == null
+                      ? 'Not set'
+                      : Formatters.formatDate(_expiryDate!),
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -352,10 +406,7 @@ class _SectionTitle extends StatelessWidget {
   final String title;
   final IconData icon;
 
-  const _SectionTitle({
-    required this.title,
-    required this.icon,
-  });
+  const _SectionTitle({required this.title, required this.icon});
 
   @override
   Widget build(BuildContext context) {

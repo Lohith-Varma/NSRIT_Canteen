@@ -26,7 +26,9 @@ class DashboardScreen extends StatelessWidget {
     final kitchenProvider = Provider.of<KitchenProvider>(context);
 
     final screenWidth = MediaQuery.of(context).size.width;
-    final gridCrossAxisCount = screenWidth > 900 ? 3 : (screenWidth > 600 ? 2 : 2);
+    final gridCrossAxisCount = screenWidth > 900
+        ? 3
+        : (screenWidth > 600 ? 2 : 2);
 
     final lowStockList = inventoryProvider.lowStockItems;
     final recentPurchases = purchaseProvider.recentPurchases;
@@ -96,7 +98,9 @@ class DashboardScreen extends StatelessWidget {
                         OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            side: BorderSide(color: Colors.white.withValues(alpha: 0.7)),
+                            side: BorderSide(
+                              color: Colors.white.withValues(alpha: 0.7),
+                            ),
                           ),
                           onPressed: () {
                             Navigator.of(context).push(
@@ -134,66 +138,90 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 StatCard(
                   title: 'Total Items',
-                  value: Formatters.number(inventoryProvider.totalItems.toDouble()),
+                  value: Formatters.number(
+                    inventoryProvider.totalItems.toDouble(),
+                  ),
                   icon: Icons.inventory_2_rounded,
                   color: AppColors.primary,
                 ),
                 StatCard(
                   title: 'Total Categories',
-                  value: Formatters.number(inventoryProvider.totalCategories.toDouble()),
+                  value: Formatters.number(
+                    inventoryProvider.totalCategories.toDouble(),
+                  ),
                   icon: Icons.category_rounded,
                   color: AppColors.info,
                 ),
                 StatCard(
                   title: 'Total Suppliers',
-                  value: Formatters.number(supplierProvider.totalSuppliers.toDouble()),
+                  value: Formatters.number(
+                    supplierProvider.totalSuppliers.toDouble(),
+                  ),
                   icon: Icons.people_rounded,
                   color: AppColors.secondary,
                 ),
                 StatCard(
                   title: 'Total Purchases',
-                  value: Formatters.number(purchaseProvider.totalPurchases.toDouble()),
+                  value: Formatters.number(
+                    purchaseProvider.totalPurchases.toDouble(),
+                  ),
                   icon: Icons.shopping_bag_rounded,
                   color: const Color(0xFF8B5CF6),
                 ),
                 StatCard(
                   title: 'Total Inventory Value',
-                  value: Formatters.currency(inventoryProvider.totalInventoryValue),
+                  value: Formatters.currency(
+                    inventoryProvider.totalInventoryValue,
+                  ),
                   icon: Icons.account_balance_wallet_rounded,
                   color: AppColors.success,
                   subtitle: 'Weighted Avg Valuation',
                 ),
                 StatCard(
                   title: 'Low Stock Alert',
-                  value: Formatters.number(inventoryProvider.lowStockCount.toDouble()),
+                  value: Formatters.number(
+                    inventoryProvider.lowStockCount.toDouble(),
+                  ),
                   icon: Icons.warning_amber_rounded,
                   color: AppColors.danger,
-                  subtitle: inventoryProvider.lowStockCount > 0 ? 'Requires Restock' : 'Stock Healthy',
+                  subtitle: inventoryProvider.lowStockCount > 0
+                      ? 'Requires Restock'
+                      : 'Stock Healthy',
                 ),
                 StatCard(
                   title: 'Out of Stock',
-                  value: Formatters.number(inventoryProvider.outOfStockCount.toDouble()),
+                  value: Formatters.number(
+                    inventoryProvider.outOfStockCount.toDouble(),
+                  ),
                   icon: Icons.remove_shopping_cart_rounded,
                   color: AppColors.warning,
-                  subtitle: inventoryProvider.outOfStockCount > 0 ? 'Immediate Action' : 'None',
+                  subtitle: inventoryProvider.outOfStockCount > 0
+                      ? 'Immediate Action'
+                      : 'None',
                 ),
                 StatCard(
                   title: 'Healthy Stock',
-                  value: Formatters.number(inventoryProvider.healthyStockCount.toDouble()),
+                  value: Formatters.number(
+                    inventoryProvider.healthyStockCount.toDouble(),
+                  ),
                   icon: Icons.check_circle_rounded,
                   color: AppColors.success,
                   subtitle: 'Above minimum',
                 ),
                 StatCard(
                   title: 'Menu Items',
-                  value: Formatters.number(kitchenProvider.totalMenuItems.toDouble()),
+                  value: Formatters.number(
+                    kitchenProvider.totalMenuItems.toDouble(),
+                  ),
                   icon: Icons.restaurant_menu_rounded,
                   color: AppColors.info,
                   subtitle: 'Smart kitchen',
                 ),
                 StatCard(
                   title: 'Prepared Food',
-                  value: Formatters.number(kitchenProvider.preparedFoodAvailable),
+                  value: Formatters.number(
+                    kitchenProvider.preparedFoodAvailable,
+                  ),
                   icon: Icons.soup_kitchen_rounded,
                   color: AppColors.secondary,
                   subtitle: 'Available units',
@@ -215,7 +243,10 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.warning_amber_rounded, color: AppColors.danger),
+                    const Icon(
+                      Icons.warning_amber_rounded,
+                      color: AppColors.danger,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Low Stock Items',
@@ -246,7 +277,11 @@ class DashboardScreen extends StatelessWidget {
                       padding: EdgeInsets.all(24.0),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle_outline, color: AppColors.success, size: 32),
+                          Icon(
+                            Icons.check_circle_outline,
+                            color: AppColors.success,
+                            size: 32,
+                          ),
                           SizedBox(width: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,7 +292,10 @@ class DashboardScreen extends StatelessWidget {
                               ),
                               Text(
                                 'No items currently fall below their specified minimum stock threshold.',
-                                style: TextStyle(fontSize: 12, color: Colors.grey),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ],
                           ),
@@ -282,8 +320,14 @@ class DashboardScreen extends StatelessWidget {
                             );
                           },
                           leading: CircleAvatar(
-                            backgroundColor: AppColors.danger.withValues(alpha: 0.15),
-                            child: const Icon(Icons.warning_amber_rounded, color: AppColors.danger, size: 20),
+                            backgroundColor: AppColors.danger.withValues(
+                              alpha: 0.15,
+                            ),
+                            child: const Icon(
+                              Icons.warning_amber_rounded,
+                              color: AppColors.danger,
+                              size: 20,
+                            ),
                           ),
                           title: Text(
                             item.name,
@@ -298,7 +342,10 @@ class DashboardScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                Formatters.quantityWithUnit(item.totalStock, item.unit),
+                                Formatters.quantityWithUnit(
+                                  item.totalStock,
+                                  item.unit,
+                                ),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.danger,
@@ -336,7 +383,8 @@ class DashboardScreen extends StatelessWidget {
             recentPurchases.isEmpty
                 ? const EmptyStateWidget(
                     title: 'No Purchases Recorded',
-                    message: 'Click "+ Purchase" above to add your first canteen purchase entry.',
+                    message:
+                        'Click "+ Purchase" above to add your first canteen purchase entry.',
                     icon: Icons.receipt_long_outlined,
                   )
                 : ListView.builder(
@@ -349,8 +397,14 @@ class DashboardScreen extends StatelessWidget {
                         margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                            child: const Icon(Icons.shopping_bag_outlined, color: AppColors.primary, size: 20),
+                            backgroundColor: AppColors.primary.withValues(
+                              alpha: 0.1,
+                            ),
+                            child: const Icon(
+                              Icons.shopping_bag_outlined,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
                           ),
                           title: Text(
                             purchase.itemName,
@@ -376,7 +430,8 @@ class DashboardScreen extends StatelessWidget {
                                 '${Formatters.number(purchase.quantity)} ${purchase.unit} @ ₹${purchase.pricePerUnit}',
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                                  color: theme.textTheme.bodyMedium?.color
+                                      ?.withValues(alpha: 0.7),
                                 ),
                               ),
                             ],

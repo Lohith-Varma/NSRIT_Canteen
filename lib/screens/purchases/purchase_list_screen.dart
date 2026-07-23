@@ -41,7 +41,8 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                   purchaseProvider.setSearchQuery(value);
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search by Invoice #, Item, Supplier, or Remarks...',
+                  hintText:
+                      'Search by Invoice #, Item, Supplier, or Remarks...',
                   prefixIcon: const Icon(Icons.search_rounded),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
@@ -73,7 +74,10 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                       },
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
                       itemCount: purchases.length,
                       itemBuilder: (context, index) {
                         final purchase = purchases[index];
@@ -86,12 +90,18 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: AppColors.primary.withValues(alpha: 0.1),
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
@@ -106,7 +116,9 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                                       ),
                                     ),
                                     Text(
-                                      Formatters.formatDate(purchase.purchaseDate),
+                                      Formatters.formatDate(
+                                        purchase.purchaseDate,
+                                      ),
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: theme.textTheme.bodySmall?.color,
@@ -116,12 +128,14 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                                 ),
                                 const SizedBox(height: 12),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             purchase.itemName,
@@ -135,17 +149,24 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                                             'Supplier: ${purchase.supplierName}',
                                             style: TextStyle(
                                               fontSize: 13,
-                                              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                                              color: theme
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.color
+                                                  ?.withValues(alpha: 0.8),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          Formatters.currency(purchase.totalAmount),
+                                          Formatters.currency(
+                                            purchase.totalAmount,
+                                          ),
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -156,20 +177,27 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                                           '${Formatters.number(purchase.quantity)} ${purchase.unit} @ ₹${purchase.pricePerUnit}',
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: theme.textTheme.bodySmall?.color,
+                                            color: theme
+                                                .textTheme
+                                                .bodySmall
+                                                ?.color,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
-                                if (purchase.remarks != null && purchase.remarks!.isNotEmpty) ...[
+                                if (purchase.remarks != null &&
+                                    purchase.remarks!.isNotEmpty) ...[
                                   const SizedBox(height: 8),
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                                      color: theme
+                                          .colorScheme
+                                          .surfaceContainerHighest
+                                          .withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -194,11 +222,9 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const AddPurchaseScreen(),
-            ),
-          );
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const AddPurchaseScreen()));
         },
         icon: const Icon(Icons.add_shopping_cart),
         label: const Text('Record Purchase'),

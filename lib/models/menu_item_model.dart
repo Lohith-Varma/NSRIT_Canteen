@@ -1,3 +1,5 @@
+import '../utils/date_parser.dart';
+
 class MenuItemModel {
   final String id;
   final String name;
@@ -40,18 +42,8 @@ class MenuItemModel {
       imageUrl: map['imageUrl'] ?? '',
       sellingPrice: (map['sellingPrice'] as num?)?.toDouble() ?? 0.0,
       isActive: map['isActive'] ?? true,
-      createdAt: _parseDate(map['createdAt']),
-      updatedAt: _parseDate(map['updatedAt']),
+      createdAt: parseModelDate(map['createdAt']),
+      updatedAt: parseModelDate(map['updatedAt']),
     );
   }
-}
-
-DateTime _parseDate(dynamic value) {
-  if (value == null) return DateTime.now();
-  if (value is DateTime) return value;
-  final seconds = value.seconds;
-  if (seconds is int) {
-    return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-  }
-  return DateTime.tryParse(value.toString()) ?? DateTime.now();
 }

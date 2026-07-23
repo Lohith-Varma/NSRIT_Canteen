@@ -11,17 +11,16 @@ import '../../utils/formatters.dart';
 class MenuItemDetailScreen extends StatefulWidget {
   final MenuItemModel menuItem;
 
-  const MenuItemDetailScreen({
-    super.key,
-    required this.menuItem,
-  });
+  const MenuItemDetailScreen({super.key, required this.menuItem});
 
   @override
   State<MenuItemDetailScreen> createState() => _MenuItemDetailScreenState();
 }
 
 class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
-  final TextEditingController _quantityController = TextEditingController(text: '10');
+  final TextEditingController _quantityController = TextEditingController(
+    text: '10',
+  );
   PreparationPreview? _preview;
   bool _isPreviewLoading = false;
 
@@ -72,10 +71,19 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
 
   Future<void> _confirmPreparation() async {
     final quantity = double.tryParse(_quantityController.text) ?? 0;
-    final kitchenProvider = Provider.of<KitchenProvider>(context, listen: false);
-    final inventoryProvider = Provider.of<InventoryProvider>(context, listen: false);
+    final kitchenProvider = Provider.of<KitchenProvider>(
+      context,
+      listen: false,
+    );
+    final inventoryProvider = Provider.of<InventoryProvider>(
+      context,
+      listen: false,
+    );
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final user = authProvider.user?.displayName ?? authProvider.user?.email ?? 'Kitchen User';
+    final user =
+        authProvider.user?.displayName ??
+        authProvider.user?.email ??
+        'Kitchen User';
 
     final success = await kitchenProvider.prepareMenuItem(
       menuItem: widget.menuItem,
@@ -108,7 +116,9 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
       widget.menuItem,
       inventoryProvider.items,
     );
-    final readyQuantity = kitchenProvider.preparedQuantityForMenuItem(widget.menuItem.id);
+    final readyQuantity = kitchenProvider.preparedQuantityForMenuItem(
+      widget.menuItem.id,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.menuItem.name)),
@@ -122,9 +132,11 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
               child: Image.network(
                 widget.menuItem.imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const ColoredBox(
+                errorBuilder: (context, error, stackTrace) => const ColoredBox(
                   color: Colors.black12,
-                  child: Center(child: Icon(Icons.restaurant_rounded, size: 56)),
+                  child: Center(
+                    child: Icon(Icons.restaurant_rounded, size: 56),
+                  ),
                 ),
               ),
             ),
@@ -136,9 +148,19 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Chip(label: Text(widget.menuItem.section)),
-              Chip(label: Text(available ? 'Inventory Available' : 'Inventory Short')),
-              Chip(label: Text('${Formatters.number(readyQuantity)} prepared units ready')),
-              Chip(label: Text(Formatters.currency(widget.menuItem.sellingPrice))),
+              Chip(
+                label: Text(
+                  available ? 'Inventory Available' : 'Inventory Short',
+                ),
+              ),
+              Chip(
+                label: Text(
+                  '${Formatters.number(readyQuantity)} prepared units ready',
+                ),
+              ),
+              Chip(
+                label: Text(Formatters.currency(widget.menuItem.sellingPrice)),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -177,7 +199,8 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
             ),
           const SizedBox(height: 16),
           FilledButton.icon(
-            onPressed: _preview?.canPrepare == true && !kitchenProvider.isLoading
+            onPressed:
+                _preview?.canPrepare == true && !kitchenProvider.isLoading
                 ? _confirmPreparation
                 : null,
             icon: kitchenProvider.isLoading
@@ -221,16 +244,26 @@ class _PreparationPreviewCard extends StatelessWidget {
           children: [
             Text(
               'Recipe and Inventory',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 12),
             ...preview.recipe.ingredients.map((ingredient) {
-              final inventory = preview.inventoryByIngredient[ingredient.ingredientName];
+              final inventory =
+                  preview.inventoryByIngredient[ingredient.ingredientName];
               final requiredQty =
-                  preview.requiredQuantityByIngredient[ingredient.ingredientName] ?? 0;
+                  preview.requiredQuantityByIngredient[ingredient
+                      .ingredientName] ??
+                  0;
               final availableQty =
-                  preview.availableQuantityByIngredient[ingredient.ingredientName] ?? 0;
-              final cost = preview.estimatedCostByIngredient[ingredient.ingredientName] ?? 0;
+                  preview.availableQuantityByIngredient[ingredient
+                      .ingredientName] ??
+                  0;
+              final cost =
+                  preview.estimatedCostByIngredient[ingredient
+                      .ingredientName] ??
+                  0;
               final isEnough = inventory != null && availableQty >= requiredQty;
 
               return ListTile(
@@ -251,7 +284,10 @@ class _PreparationPreviewCard extends StatelessWidget {
             _CostRow(label: 'Ingredient Cost', value: preview.ingredientCost),
             _CostRow(label: 'Preparation Cost', value: preview.preparationCost),
             _CostRow(label: 'Actual Food Cost', value: preview.actualFoodCost),
-            _CostRow(label: 'Current Selling Price', value: menuItem.sellingPrice),
+            _CostRow(
+              label: 'Current Selling Price',
+              value: menuItem.sellingPrice,
+            ),
             _CostRow(label: 'Estimated Profit', value: estimatedProfit),
           ],
         ),
@@ -264,10 +300,7 @@ class _CostRow extends StatelessWidget {
   final String label;
   final double value;
 
-  const _CostRow({
-    required this.label,
-    required this.value,
-  });
+  const _CostRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {

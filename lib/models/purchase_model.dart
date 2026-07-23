@@ -1,3 +1,5 @@
+import '../utils/date_parser.dart';
+
 class PurchaseModel {
   final String id;
   final String supplierId;
@@ -56,14 +58,10 @@ class PurchaseModel {
       quantity: (map['quantity'] as num?)?.toDouble() ?? 0.0,
       unit: map['unit'] ?? 'kg',
       pricePerUnit: (map['pricePerUnit'] as num?)?.toDouble() ?? 0.0,
-      purchaseDate: map['purchaseDate'] != null
-          ? DateTime.tryParse(map['purchaseDate']) ?? DateTime.now()
-          : DateTime.now(),
+      purchaseDate: parseModelDate(map['purchaseDate']),
       invoiceNumber: map['invoiceNumber'] ?? '',
       remarks: map['remarks'],
-      createdAt: map['createdAt'] != null
-          ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
-          : DateTime.now(),
+      createdAt: parseModelDate(map['createdAt']),
     );
   }
 }

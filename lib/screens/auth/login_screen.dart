@@ -46,13 +46,16 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: AppColors.success,
         ),
       );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MainLayout()),
-      );
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const MainLayout()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.errorMessage ?? 'Login failed. Please check credentials.'),
+          content: Text(
+            authProvider.errorMessage ??
+                'Login failed. Please check credentials.',
+          ),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -81,7 +84,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.1),
+                        color: theme.colorScheme.primary.withValues(
+                          alpha: isDark ? 0.2 : 0.1,
+                        ),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -104,7 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'Sign in to manage canteen inventory & purchases',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                      color: theme.textTheme.bodyMedium?.color?.withValues(
+                        alpha: 0.7,
+                      ),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -156,7 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (_) => const ForgotPasswordScreen(),
+                                      builder: (_) =>
+                                          const ForgotPasswordScreen(),
                                     ),
                                   );
                                 },
@@ -186,7 +194,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.shield_outlined, size: 16, color: theme.textTheme.bodySmall?.color),
+                      Icon(
+                        Icons.shield_outlined,
+                        size: 16,
+                        color: theme.textTheme.bodySmall?.color,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         'Secured by Firebase Authentication',

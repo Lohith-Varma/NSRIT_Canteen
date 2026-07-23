@@ -30,45 +30,48 @@ class RecipeListScreen extends StatelessWidget {
             child: provider.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : recipes.isEmpty
-                    ? const EmptyStateWidget(
-                        title: 'No Recipes Found',
-                        message: 'Try a different recipe search.',
-                        icon: Icons.menu_book_outlined,
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        itemCount: recipes.length,
-                        itemBuilder: (context, index) {
-                          final recipe = recipes[index];
-                          return Card(
-                            child: ListTile(
-                              leading: const CircleAvatar(
-                                child: Icon(Icons.menu_book_rounded),
-                              ),
-                              title: Text(
-                                recipe.menuItemName,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Text(
-                                '${recipe.ingredients.length} ingredients - prep ${Formatters.currency(recipe.preparationCostPerUnit)} per unit',
-                              ),
-                              trailing: IconButton(
-                                tooltip: 'Edit Recipe',
-                                icon: const Icon(Icons.edit_rounded),
-                                onPressed: () => _showRecipeEditor(context, recipe),
-                              ),
-                              onTap: () => _showRecipeEditor(context, recipe),
-                            ),
-                          );
-                        },
-                      ),
+                ? const EmptyStateWidget(
+                    title: 'No Recipes Found',
+                    message: 'Try a different recipe search.',
+                    icon: Icons.menu_book_outlined,
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    itemCount: recipes.length,
+                    itemBuilder: (context, index) {
+                      final recipe = recipes[index];
+                      return Card(
+                        child: ListTile(
+                          leading: const CircleAvatar(
+                            child: Icon(Icons.menu_book_rounded),
+                          ),
+                          title: Text(
+                            recipe.menuItemName,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            '${recipe.ingredients.length} ingredients - prep ${Formatters.currency(recipe.preparationCostPerUnit)} per unit',
+                          ),
+                          trailing: IconButton(
+                            tooltip: 'Edit Recipe',
+                            icon: const Icon(Icons.edit_rounded),
+                            onPressed: () => _showRecipeEditor(context, recipe),
+                          ),
+                          onTap: () => _showRecipeEditor(context, recipe),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _showRecipeEditor(BuildContext context, RecipeModel recipe) async {
+  Future<void> _showRecipeEditor(
+    BuildContext context,
+    RecipeModel recipe,
+  ) async {
     await showDialog<void>(
       context: context,
       builder: (_) => _RecipeEditDialog(recipe: recipe),
@@ -79,9 +82,7 @@ class RecipeListScreen extends StatelessWidget {
 class _RecipeEditDialog extends StatefulWidget {
   final RecipeModel recipe;
 
-  const _RecipeEditDialog({
-    required this.recipe,
-  });
+  const _RecipeEditDialog({required this.recipe});
 
   @override
   State<_RecipeEditDialog> createState() => _RecipeEditDialogState();
@@ -114,8 +115,11 @@ class _RecipeEditDialogState extends State<_RecipeEditDialog> {
   Future<void> _save() async {
     final ingredients = _ingredientControllers
         .map((controllers) => controllers.toIngredient())
-        .where((ingredient) =>
-            ingredient.ingredientName.trim().isNotEmpty && ingredient.quantity > 0)
+        .where(
+          (ingredient) =>
+              ingredient.ingredientName.trim().isNotEmpty &&
+              ingredient.quantity > 0,
+        )
         .toList();
     if (ingredients.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -135,7 +139,11 @@ class _RecipeEditDialogState extends State<_RecipeEditDialog> {
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(success ? 'Recipe updated.' : provider.errorMessage ?? 'Update failed.'),
+        content: Text(
+          success
+              ? 'Recipe updated.'
+              : provider.errorMessage ?? 'Update failed.',
+        ),
       ),
     );
   }
@@ -152,8 +160,12 @@ class _RecipeEditDialogState extends State<_RecipeEditDialog> {
             children: [
               TextField(
                 controller: _prepCostController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'Preparation Cost Per Unit'),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'Preparation Cost Per Unit',
+                ),
               ),
               const SizedBox(height: 16),
               ..._ingredientControllers.asMap().entries.map((entry) {
@@ -165,15 +177,18 @@ class _RecipeEditDialogState extends State<_RecipeEditDialog> {
                         flex: 3,
                         child: TextField(
                           controller: entry.value.nameController,
-                          decoration: const InputDecoration(labelText: 'Ingredient'),
+                          decoration: const InputDecoration(
+                            labelText: 'Ingredient',
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextField(
                           controller: entry.value.quantityController,
-                          keyboardType:
-                              const TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
                           decoration: const InputDecoration(labelText: 'Qty'),
                         ),
                       ),
@@ -189,7 +204,9 @@ class _RecipeEditDialogState extends State<_RecipeEditDialog> {
                         icon: const Icon(Icons.delete_outline_rounded),
                         onPressed: () {
                           setState(() {
-                            final removed = _ingredientControllers.removeAt(entry.key);
+                            final removed = _ingredientControllers.removeAt(
+                              entry.key,
+                            );
                             removed.dispose();
                           });
                         },
@@ -203,7 +220,9 @@ class _RecipeEditDialogState extends State<_RecipeEditDialog> {
                 child: TextButton.icon(
                   onPressed: () {
                     setState(() {
-                      _ingredientControllers.add(_IngredientControllers.empty());
+                      _ingredientControllers.add(
+                        _IngredientControllers.empty(),
+                      );
                     });
                   },
                   icon: const Icon(Icons.add_rounded),
@@ -219,10 +238,7 @@ class _RecipeEditDialogState extends State<_RecipeEditDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
-        FilledButton(
-          onPressed: _save,
-          child: const Text('Save Recipe'),
-        ),
+        FilledButton(onPressed: _save, child: const Text('Save Recipe')),
       ],
     );
   }
@@ -242,7 +258,9 @@ class _IngredientControllers {
   factory _IngredientControllers.fromIngredient(RecipeIngredient ingredient) {
     return _IngredientControllers(
       nameController: TextEditingController(text: ingredient.ingredientName),
-      quantityController: TextEditingController(text: Formatters.number(ingredient.quantity)),
+      quantityController: TextEditingController(
+        text: Formatters.number(ingredient.quantity),
+      ),
       unitController: TextEditingController(text: ingredient.unit),
     );
   }
@@ -259,7 +277,9 @@ class _IngredientControllers {
     return RecipeIngredient(
       ingredientName: nameController.text.trim(),
       quantity: double.tryParse(quantityController.text.trim()) ?? 0,
-      unit: unitController.text.trim().isEmpty ? 'kg' : unitController.text.trim(),
+      unit: unitController.text.trim().isEmpty
+          ? 'kg'
+          : unitController.text.trim(),
     );
   }
 

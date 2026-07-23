@@ -1,3 +1,5 @@
+import '../utils/date_parser.dart';
+
 class SupplierModel {
   final String id;
   final String name;
@@ -57,9 +59,7 @@ class SupplierModel {
       email: map['email'] ?? '',
       address: map['address'] ?? '',
       gstNumber: map['gstNumber'],
-      createdAt: map['createdAt'] != null
-          ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
-          : DateTime.now(),
+      createdAt: parseModelDate(map['createdAt']),
     );
   }
 }

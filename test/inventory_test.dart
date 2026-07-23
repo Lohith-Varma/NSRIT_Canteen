@@ -53,32 +53,35 @@ void main() {
       expect(riceItem.isLowStock, isFalse);
     });
 
-    test('Correctly triggers low stock warning when total stock is below minStock', () {
-      final lowStockItem = InventoryItem(
-        id: 'milk_1',
-        name: 'Whole Milk',
-        category: 'Dairy',
-        unit: 'litre',
-        minStock: 50.0,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        lots: [
-          InventoryLot(
-            id: 'lot_m1',
-            itemId: 'milk_1',
-            purchaseId: 'pur_m1',
-            quantity: 15.0,
-            unit: 'litre',
-            unitPrice: 58.0,
-            purchaseDate: DateTime.now(),
-            supplierId: 'sup_dairy',
-            invoiceNumber: 'INV-M1',
-          ),
-        ],
-      );
+    test(
+      'Correctly triggers low stock warning when total stock is below minStock',
+      () {
+        final lowStockItem = InventoryItem(
+          id: 'milk_1',
+          name: 'Whole Milk',
+          category: 'Dairy',
+          unit: 'litre',
+          minStock: 50.0,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          lots: [
+            InventoryLot(
+              id: 'lot_m1',
+              itemId: 'milk_1',
+              purchaseId: 'pur_m1',
+              quantity: 15.0,
+              unit: 'litre',
+              unitPrice: 58.0,
+              purchaseDate: DateTime.now(),
+              supplierId: 'sup_dairy',
+              invoiceNumber: 'INV-M1',
+            ),
+          ],
+        );
 
-      expect(lowStockItem.totalStock, equals(15.0));
-      expect(lowStockItem.isLowStock, isTrue);
-    });
+        expect(lowStockItem.totalStock, equals(15.0));
+        expect(lowStockItem.isLowStock, isTrue);
+      },
+    );
   });
 }

@@ -15,12 +15,7 @@ import '../models/user_model.dart';
 import '../services/admin_service.dart';
 import '../utils/formatters.dart';
 
-enum AnalyticsRange {
-  today,
-  thisWeek,
-  thisMonth,
-  custom,
-}
+enum AnalyticsRange { today, thisWeek, thisMonth, custom }
 
 class AdminProvider extends ChangeNotifier {
   final AdminService _adminService = AdminService();
@@ -162,81 +157,94 @@ class AdminProvider extends ChangeNotifier {
 
     for (final item in inventory) {
       if (item.isOutOfStock) {
-        generated.add(NotificationModel(
-          id: 'out_${item.id}',
-          title: 'Out of Stock',
-          description: '${item.itemName} is unavailable in inventory.',
-          timestamp: now,
-          isRead: false,
-          type: 'Out of Stock',
-          referenceId: item.id,
-        ));
+        generated.add(
+          NotificationModel(
+            id: 'out_${item.id}',
+            title: 'Out of Stock',
+            description: '${item.itemName} is unavailable in inventory.',
+            timestamp: now,
+            isRead: false,
+            type: 'Out of Stock',
+            referenceId: item.id,
+          ),
+        );
       } else if (item.isLowStock) {
-        generated.add(NotificationModel(
-          id: 'low_${item.id}',
-          title: 'Low Stock',
-          description:
-              '${item.itemName} is below minimum stock (${Formatters.quantityWithUnit(item.minimumStock, item.unit)}).',
-          timestamp: now,
-          isRead: false,
-          type: 'Low Stock',
-          referenceId: item.id,
-        ));
+        generated.add(
+          NotificationModel(
+            id: 'low_${item.id}',
+            title: 'Low Stock',
+            description:
+                '${item.itemName} is below minimum stock (${Formatters.quantityWithUnit(item.minimumStock, item.unit)}).',
+            timestamp: now,
+            isRead: false,
+            type: 'Low Stock',
+            referenceId: item.id,
+          ),
+        );
       }
 
       final expiry = item.expiryDate;
       if (expiry != null &&
           expiry.isAfter(now.subtract(const Duration(days: 1))) &&
           expiry.isBefore(now.add(const Duration(days: 7)))) {
-        generated.add(NotificationModel(
-          id: 'exp_${item.id}',
-          title: 'Expiring Inventory',
-          description: '${item.itemName} expires on ${Formatters.formatDate(expiry)}.',
-          timestamp: now,
-          isRead: false,
-          type: 'Expiring Inventory',
-          referenceId: item.id,
-        ));
+        generated.add(
+          NotificationModel(
+            id: 'exp_${item.id}',
+            title: 'Expiring Inventory',
+            description:
+                '${item.itemName} expires on ${Formatters.formatDate(expiry)}.',
+            timestamp: now,
+            isRead: false,
+            type: 'Expiring Inventory',
+            referenceId: item.id,
+          ),
+        );
       }
     }
 
     for (final purchase in purchases.take(5)) {
-      generated.add(NotificationModel(
-        id: 'purchase_${purchase.id}',
-        title: 'New Purchase',
-        description:
-            '${purchase.itemName} purchased for ${Formatters.currency(purchase.totalAmount)}.',
-        timestamp: purchase.createdAt,
-        isRead: false,
-        type: 'New Purchase',
-        referenceId: purchase.id,
-      ));
+      generated.add(
+        NotificationModel(
+          id: 'purchase_${purchase.id}',
+          title: 'New Purchase',
+          description:
+              '${purchase.itemName} purchased for ${Formatters.currency(purchase.totalAmount)}.',
+          timestamp: purchase.createdAt,
+          isRead: false,
+          type: 'New Purchase',
+          referenceId: purchase.id,
+        ),
+      );
     }
 
     for (final sale in sales.take(5)) {
-      generated.add(NotificationModel(
-        id: 'sale_${sale.id}',
-        title: 'Successful Sale',
-        description:
-            '${sale.menuItemName} sale completed for ${Formatters.currency(sale.totalAmount)}.',
-        timestamp: sale.soldAt,
-        isRead: false,
-        type: 'Successful Sale',
-        referenceId: sale.id,
-      ));
+      generated.add(
+        NotificationModel(
+          id: 'sale_${sale.id}',
+          title: 'Successful Sale',
+          description:
+              '${sale.menuItemName} sale completed for ${Formatters.currency(sale.totalAmount)}.',
+          timestamp: sale.soldAt,
+          isRead: false,
+          type: 'Successful Sale',
+          referenceId: sale.id,
+        ),
+      );
     }
 
     for (final food in preparedFood.take(5)) {
-      generated.add(NotificationModel(
-        id: 'prep_${food.id}',
-        title: 'Preparation Completed',
-        description:
-            '${food.menuItemName} prepared: ${Formatters.number(food.quantityPrepared)} units.',
-        timestamp: food.preparedAt,
-        isRead: false,
-        type: 'Preparation Completed',
-        referenceId: food.id,
-      ));
+      generated.add(
+        NotificationModel(
+          id: 'prep_${food.id}',
+          title: 'Preparation Completed',
+          description:
+              '${food.menuItemName} prepared: ${Formatters.number(food.quantityPrepared)} units.',
+          timestamp: food.preparedAt,
+          isRead: false,
+          type: 'Preparation Completed',
+          referenceId: food.id,
+        ),
+      );
     }
 
     await _adminService.upsertNotifications(generated);
@@ -265,14 +273,20 @@ class AdminProvider extends ChangeNotifier {
         final start = DateTime(now.year, now.month, now.day);
         return DateTimeRange(end: now, start: start);
       case AnalyticsRange.thisWeek:
-        final start = DateTime(now.year, now.month, now.day)
-            .subtract(Duration(days: now.weekday - 1));
+        final start = DateTime(
+          now.year,
+          now.month,
+          now.day,
+        ).subtract(Duration(days: now.weekday - 1));
         return DateTimeRange(end: now, start: start);
       case AnalyticsRange.thisMonth:
         return DateTimeRange(start: DateTime(now.year, now.month), end: now);
       case AnalyticsRange.custom:
         return _customRange ??
-            DateTimeRange(start: now.subtract(const Duration(days: 30)), end: now);
+            DateTimeRange(
+              start: now.subtract(const Duration(days: 30)),
+              end: now,
+            );
     }
   }
 
@@ -307,13 +321,15 @@ class AdminProvider extends ChangeNotifier {
           generatedAt: now,
           columns: const ['Date', 'Item', 'Qty', 'Payment', 'Amount'],
           rows: filteredSales
-              .map((sale) => [
-                    Formatters.formatDateTime(sale.soldAt),
-                    sale.menuItemName,
-                    Formatters.number(sale.quantity),
-                    sale.paymentMethod,
-                    Formatters.currency(sale.totalAmount),
-                  ])
+              .map(
+                (sale) => [
+                  Formatters.formatDateTime(sale.soldAt),
+                  sale.menuItemName,
+                  Formatters.number(sale.quantity),
+                  sale.paymentMethod,
+                  Formatters.currency(sale.totalAmount),
+                ],
+              )
               .toList(),
         );
       case 'Purchase Report':
@@ -323,13 +339,15 @@ class AdminProvider extends ChangeNotifier {
           generatedAt: now,
           columns: const ['Date', 'Supplier', 'Item', 'Qty', 'Amount'],
           rows: purchases
-              .map((purchase) => [
-                    Formatters.formatDate(purchase.purchaseDate),
-                    purchase.supplierName,
-                    purchase.itemName,
-                    Formatters.quantityWithUnit(purchase.quantity, purchase.unit),
-                    Formatters.currency(purchase.totalAmount),
-                  ])
+              .map(
+                (purchase) => [
+                  Formatters.formatDate(purchase.purchaseDate),
+                  purchase.supplierName,
+                  purchase.itemName,
+                  Formatters.quantityWithUnit(purchase.quantity, purchase.unit),
+                  Formatters.currency(purchase.totalAmount),
+                ],
+              )
               .toList(),
         );
       case 'Inventory Report':
@@ -339,13 +357,15 @@ class AdminProvider extends ChangeNotifier {
           generatedAt: now,
           columns: const ['Item', 'Category', 'Stock', 'Min Stock', 'Value'],
           rows: inventory
-              .map((item) => [
-                    item.itemName,
-                    item.category,
-                    Formatters.quantityWithUnit(item.totalStock, item.unit),
-                    Formatters.quantityWithUnit(item.minimumStock, item.unit),
-                    Formatters.currency(item.totalValue),
-                  ])
+              .map(
+                (item) => [
+                  item.itemName,
+                  item.category,
+                  Formatters.quantityWithUnit(item.totalStock, item.unit),
+                  Formatters.quantityWithUnit(item.minimumStock, item.unit),
+                  Formatters.currency(item.totalValue),
+                ],
+              )
               .toList(),
         );
       case 'Supplier Report':
@@ -355,12 +375,14 @@ class AdminProvider extends ChangeNotifier {
           generatedAt: now,
           columns: const ['Name', 'Phone', 'Email', 'GST'],
           rows: suppliers
-              .map((supplier) => [
-                    supplier.name,
-                    supplier.phone,
-                    supplier.email,
-                    supplier.gstNumber ?? '',
-                  ])
+              .map(
+                (supplier) => [
+                  supplier.name,
+                  supplier.phone,
+                  supplier.email,
+                  supplier.gstNumber ?? '',
+                ],
+              )
               .toList(),
         );
       case 'Stock Movement Report':
@@ -368,16 +390,25 @@ class AdminProvider extends ChangeNotifier {
           title: 'Stock Movement Report',
           type: type,
           generatedAt: now,
-          columns: const ['Date', 'Action', 'Reference', 'Item', 'Quantity', 'User'],
+          columns: const [
+            'Date',
+            'Action',
+            'Reference',
+            'Item',
+            'Quantity',
+            'User',
+          ],
           rows: movements
-              .map((movement) => [
-                    Formatters.formatDateTime(movement.dateTime),
-                    movement.action,
-                    movement.reference,
-                    movement.itemName,
-                    Formatters.quantityWithUnit(movement.quantity, movement.unit),
-                    movement.user,
-                  ])
+              .map(
+                (movement) => [
+                  Formatters.formatDateTime(movement.dateTime),
+                  movement.action,
+                  movement.reference,
+                  movement.itemName,
+                  Formatters.quantityWithUnit(movement.quantity, movement.unit),
+                  movement.user,
+                ],
+              )
               .toList(),
         );
       case 'Profit Report':
@@ -385,14 +416,21 @@ class AdminProvider extends ChangeNotifier {
           title: 'Profit Report',
           type: type,
           generatedAt: now,
-          columns: const ['Item', 'Revenue', 'Estimated Cost', 'Estimated Profit'],
+          columns: const [
+            'Item',
+            'Revenue',
+            'Estimated Cost',
+            'Estimated Profit',
+          ],
           rows: sales
-              .map((sale) => [
-                    sale.menuItemName,
-                    Formatters.currency(sale.totalAmount),
-                    Formatters.currency(sale.totalAmount * 0.55),
-                    Formatters.currency(sale.totalAmount * 0.45),
-                  ])
+              .map(
+                (sale) => [
+                  sale.menuItemName,
+                  Formatters.currency(sale.totalAmount),
+                  Formatters.currency(sale.totalAmount * 0.55),
+                  Formatters.currency(sale.totalAmount * 0.45),
+                ],
+              )
               .toList(),
         );
       case 'Low Stock Report':
@@ -403,12 +441,14 @@ class AdminProvider extends ChangeNotifier {
           columns: const ['Item', 'Category', 'Current', 'Minimum'],
           rows: inventory
               .where((item) => item.isLowStock || item.isOutOfStock)
-              .map((item) => [
-                    item.itemName,
-                    item.category,
-                    Formatters.quantityWithUnit(item.totalStock, item.unit),
-                    Formatters.quantityWithUnit(item.minimumStock, item.unit),
-                  ])
+              .map(
+                (item) => [
+                  item.itemName,
+                  item.category,
+                  Formatters.quantityWithUnit(item.totalStock, item.unit),
+                  Formatters.quantityWithUnit(item.minimumStock, item.unit),
+                ],
+              )
               .toList(),
         );
       default:

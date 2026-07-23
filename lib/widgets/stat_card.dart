@@ -50,7 +50,9 @@ class StatCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                        color: theme.textTheme.bodyMedium?.color?.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -62,11 +64,7 @@ class StatCard extends StatelessWidget {
                       color: color.withValues(alpha: isDark ? 0.2 : 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
-                      icon,
-                      color: color,
-                      size: 20,
-                    ),
+                    child: Icon(icon, color: color, size: 20),
                   ),
                 ],
               ),

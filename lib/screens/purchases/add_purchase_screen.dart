@@ -33,7 +33,8 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _invoiceController = TextEditingController(
-    text: 'INV-${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+    text:
+        'INV-${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
   );
   final TextEditingController _remarksController = TextEditingController();
 
@@ -101,8 +102,14 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
       return;
     }
 
-    final purchaseProvider = Provider.of<PurchaseProvider>(context, listen: false);
-    final inventoryProvider = Provider.of<InventoryProvider>(context, listen: false);
+    final purchaseProvider = Provider.of<PurchaseProvider>(
+      context,
+      listen: false,
+    );
+    final inventoryProvider = Provider.of<InventoryProvider>(
+      context,
+      listen: false,
+    );
 
     final purchase = PurchaseModel(
       id: '',
@@ -115,7 +122,9 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
       pricePerUnit: double.parse(_priceController.text.trim()),
       purchaseDate: _selectedDate,
       invoiceNumber: _invoiceController.text.trim(),
-      remarks: _remarksController.text.trim().isEmpty ? null : _remarksController.text.trim(),
+      remarks: _remarksController.text.trim().isEmpty
+          ? null
+          : _remarksController.text.trim(),
       createdAt: DateTime.now(),
     );
 
@@ -141,7 +150,9 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(purchaseProvider.errorMessage ?? 'Failed to record purchase.'),
+          content: Text(
+            purchaseProvider.errorMessage ?? 'Failed to record purchase.',
+          ),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -159,9 +170,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     final suppliers = supplierProvider.suppliers;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Record New Purchase'),
-      ),
+      appBar: AppBar(title: const Text('Record New Purchase')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
@@ -180,12 +189,18 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                         padding: EdgeInsets.all(16.0),
                         child: Row(
                           children: [
-                            Icon(Icons.lightbulb_outline_rounded, color: AppColors.primary),
+                            Icon(
+                              Icons.lightbulb_outline_rounded,
+                              color: AppColors.primary,
+                            ),
                             SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 'Saving a purchase automatically creates a new inventory lot and increases total stock while maintaining individual price history.',
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ],
@@ -200,12 +215,18 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                       children: [
                         const Text(
                           'Inventory Item',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         TextButton.icon(
                           onPressed: () => AddEditItemDialog.show(context),
                           icon: const Icon(Icons.add, size: 16),
-                          label: const Text('New Item', style: TextStyle(fontSize: 12)),
+                          label: const Text(
+                            'New Item',
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ],
                     ),
@@ -238,12 +259,18 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                       children: [
                         const Text(
                           'Supplier',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         TextButton.icon(
                           onPressed: () => AddEditSupplierDialog.show(context),
                           icon: const Icon(Icons.add, size: 16),
-                          label: const Text('New Supplier', style: TextStyle(fontSize: 12)),
+                          label: const Text(
+                            'New Supplier',
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ],
                     ),
@@ -260,7 +287,9 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                       }).toList(),
                       onChanged: (val) {
                         if (val != null) {
-                          final selected = suppliers.firstWhere((s) => s.id == val);
+                          final selected = suppliers.firstWhere(
+                            (s) => s.id == val,
+                          );
                           setState(() {
                             _selectedSupplier = selected;
                           });
@@ -278,9 +307,12 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                             label: 'Purchase Quantity',
                             hint: 'e.g. 50',
                             controller: _quantityController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
                             onChanged: (_) => setState(() {}),
-                            validator: (v) => Validators.validateNumber(v, 'Quantity'),
+                            validator: (v) =>
+                                Validators.validateNumber(v, 'Quantity'),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -291,14 +323,20 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                             children: [
                               const Text(
                                 'Unit',
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               const SizedBox(height: 6),
                               DropdownButtonFormField<String>(
                                 initialValue: _selectedUnit,
                                 decoration: const InputDecoration(),
                                 items: AppConstants.units.map((u) {
-                                  return DropdownMenuItem(value: u, child: Text(u));
+                                  return DropdownMenuItem(
+                                    value: u,
+                                    child: Text(u),
+                                  );
                                 }).toList(),
                                 onChanged: (val) {
                                   if (val != null) {
@@ -319,10 +357,16 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                       label: 'Price per Unit (₹)',
                       hint: 'e.g. 55.00',
                       controller: _priceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      prefixIcon: const Icon(Icons.currency_rupee_rounded, size: 18),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.currency_rupee_rounded,
+                        size: 18,
+                      ),
                       onChanged: (_) => setState(() {}),
-                      validator: (v) => Validators.validateNumber(v, 'Price per Unit'),
+                      validator: (v) =>
+                          Validators.validateNumber(v, 'Price per Unit'),
                     ),
                     const SizedBox(height: 16),
 
@@ -359,7 +403,10 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                             label: 'Invoice Number',
                             hint: 'e.g. INV-2026-042',
                             controller: _invoiceController,
-                            validator: (v) => Validators.validateRequired(v, 'Invoice Number'),
+                            validator: (v) => Validators.validateRequired(
+                              v,
+                              'Invoice Number',
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -369,14 +416,20 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                             children: [
                               const Text(
                                 'Purchase Date',
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               const SizedBox(height: 6),
                               InkWell(
                                 onTap: _selectDate,
                                 child: InputDecorator(
                                   decoration: const InputDecoration(
-                                    suffixIcon: Icon(Icons.calendar_today_rounded, size: 18),
+                                    suffixIcon: Icon(
+                                      Icons.calendar_today_rounded,
+                                      size: 18,
+                                    ),
                                   ),
                                   child: Text(
                                     Formatters.formatDate(_selectedDate),

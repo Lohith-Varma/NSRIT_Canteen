@@ -1,4 +1,5 @@
 import 'inventory_lot.dart';
+import '../utils/date_parser.dart';
 
 class InventoryItem {
   final String id;
@@ -43,9 +44,9 @@ class InventoryItem {
     this.status = 'active',
     this.isDeleted = false,
     this.lots = const [],
-  })  : itemName = itemName ?? name ?? '',
-        quantity = quantity ?? 0,
-        minimumStock = minimumStock ?? minStock ?? 0;
+  }) : itemName = itemName ?? name ?? '',
+       quantity = quantity ?? 0,
+       minimumStock = minimumStock ?? minStock ?? 0;
 
   String get name => itemName;
 
@@ -59,7 +60,10 @@ class InventoryItem {
   double get averageCost {
     if (purchasePrice > 0 && lots.isEmpty) return purchasePrice;
     if (lots.isEmpty || totalStock == 0) return 0.0;
-    final totalCost = lots.fold(0.0, (sum, lot) => sum + (lot.quantity * lot.unitPrice));
+    final totalCost = lots.fold(
+      0.0,
+      (sum, lot) => sum + (lot.quantity * lot.unitPrice),
+    );
     return totalCost / totalStock;
   }
 
@@ -72,7 +76,11 @@ class InventoryItem {
   bool get isExpired {
     if (expiryDate == null) return false;
     final today = DateTime.now();
-    final expiry = DateTime(expiryDate!.year, expiryDate!.month, expiryDate!.day);
+    final expiry = DateTime(
+      expiryDate!.year,
+      expiryDate!.month,
+      expiryDate!.day,
+    );
     final current = DateTime(today.year, today.month, today.day);
     return expiry.isBefore(current);
   }
@@ -149,34 +157,19 @@ class InventoryItem {
     };
   }
 
-  factory InventoryItem.fromMap(Map<String, dynamic> map, String docId, {List<InventoryLot> lots = const []}) {
-    DateTime parseDate(dynamic value) {
-      if (value == null) return DateTime.now();
-      if (value is DateTime) return value;
-      final seconds = value.seconds;
-      if (seconds is int) {
-        return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-      }
-      return DateTime.tryParse(value.toString()) ?? DateTime.now();
-    }
-
-    DateTime? parseNullableDate(dynamic value) {
-      if (value == null || value == '') return null;
-      if (value is DateTime) return value;
-      final seconds = value.seconds;
-      if (seconds is int) {
-        return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-      }
-      return DateTime.tryParse(value.toString());
-    }
-
+  factory InventoryItem.fromMap(
+    Map<String, dynamic> map,
+    String docId, {
+    List<InventoryLot> lots = const [],
+  }) {
     return InventoryItem(
       id: docId,
       itemName: map['itemName'] ?? map['name'] ?? '',
       category: map['category'] ?? 'General',
       quantity: (map['quantity'] as num?)?.toDouble() ?? 0.0,
       unit: map['unit'] ?? 'kg',
-      minimumStock: (map['minimumStock'] as num?)?.toDouble() ??
+      minimumStock:
+          (map['minimumStock'] as num?)?.toDouble() ??
           (map['minStock'] as num?)?.toDouble() ??
           0.0,
       maximumStock: (map['maximumStock'] as num?)?.toDouble() ?? 0.0,
@@ -184,10 +177,10 @@ class InventoryItem {
       purchasePrice: (map['purchasePrice'] as num?)?.toDouble() ?? 0.0,
       sellingPrice: (map['sellingPrice'] as num?)?.toDouble() ?? 0.0,
       storageLocation: map['storageLocation'] ?? '',
-      expiryDate: parseNullableDate(map['expiryDate']),
+      expiryDate: parseOptionalModelDate(map['expiryDate']),
       notes: map['notes'] ?? '',
-      createdAt: parseDate(map['createdAt']),
-      updatedAt: parseDate(map['updatedAt']),
+      createdAt: parseModelDate(map['createdAt']),
+      updatedAt: parseModelDate(map['updatedAt']),
       createdBy: map['createdBy'] ?? '',
       status: map['status'] ?? 'active',
       isDeleted: map['isDeleted'] ?? false,

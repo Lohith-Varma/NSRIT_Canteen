@@ -1,3 +1,5 @@
+import '../utils/date_parser.dart';
+
 class InventoryLot {
   final String id;
   final String itemId;
@@ -45,9 +47,7 @@ class InventoryLot {
       quantity: (map['quantity'] as num?)?.toDouble() ?? 0.0,
       unit: map['unit'] ?? 'kg',
       unitPrice: (map['unitPrice'] as num?)?.toDouble() ?? 0.0,
-      purchaseDate: map['purchaseDate'] != null
-          ? DateTime.tryParse(map['purchaseDate']) ?? DateTime.now()
-          : DateTime.now(),
+      purchaseDate: parseModelDate(map['purchaseDate']),
       supplierId: map['supplierId'] ?? '',
       invoiceNumber: map['invoiceNumber'] ?? '',
     );

@@ -17,7 +17,9 @@ class SalesScreen extends StatefulWidget {
 class _SalesScreenState extends State<SalesScreen> {
   MenuItemModel? _selectedItem;
   String _paymentMethod = 'Cash';
-  final TextEditingController _quantityController = TextEditingController(text: '1');
+  final TextEditingController _quantityController = TextEditingController(
+    text: '1',
+  );
 
   @override
   void dispose() {
@@ -30,14 +32,20 @@ class _SalesScreenState extends State<SalesScreen> {
     final quantity = double.tryParse(_quantityController.text) ?? 0;
     if (item == null || quantity <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Select an item and enter a valid quantity.')),
+        const SnackBar(
+          content: Text('Select an item and enter a valid quantity.'),
+        ),
       );
       return;
     }
 
-    final kitchenProvider = Provider.of<KitchenProvider>(context, listen: false);
+    final kitchenProvider = Provider.of<KitchenProvider>(
+      context,
+      listen: false,
+    );
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final user = authProvider.user?.displayName ?? authProvider.user?.email ?? 'Cashier';
+    final user =
+        authProvider.user?.displayName ?? authProvider.user?.email ?? 'Cashier';
     final success = await kitchenProvider.completeSale(
       menuItem: item,
       quantity: quantity,
@@ -47,7 +55,11 @@ class _SalesScreenState extends State<SalesScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(success ? 'Sale completed.' : kitchenProvider.errorMessage ?? 'Sale failed.'),
+        content: Text(
+          success
+              ? 'Sale completed.'
+              : kitchenProvider.errorMessage ?? 'Sale failed.',
+        ),
       ),
     );
     if (success) {
@@ -63,7 +75,9 @@ class _SalesScreenState extends State<SalesScreen> {
     final sellableItems = provider.menuItems
         .where((item) => provider.preparedQuantityForMenuItem(item.id) > 0)
         .toList();
-    final selectedItemStillValid = sellableItems.any((item) => item.id == _selectedItem?.id);
+    final selectedItemStillValid = sellableItems.any(
+      (item) => item.id == _selectedItem?.id,
+    );
     if (!selectedItemStillValid) {
       _selectedItem = sellableItems.isEmpty ? null : sellableItems.first;
     }
@@ -84,18 +98,22 @@ class _SalesScreenState extends State<SalesScreen> {
                   Text(
                     'New Sale',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<MenuItemModel>(
-                    value: _selectedItem,
+                    initialValue: _selectedItem,
                     decoration: const InputDecoration(labelText: 'Menu Item'),
                     items: sellableItems.map((item) {
-                      final ready = provider.preparedQuantityForMenuItem(item.id);
+                      final ready = provider.preparedQuantityForMenuItem(
+                        item.id,
+                      );
                       return DropdownMenuItem(
                         value: item,
-                        child: Text('${item.name} (${Formatters.number(ready)} ready)'),
+                        child: Text(
+                          '${item.name} (${Formatters.number(ready)} ready)',
+                        ),
                       );
                     }).toList(),
                     onChanged: (item) {
@@ -107,16 +125,30 @@ class _SalesScreenState extends State<SalesScreen> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: _quantityController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: const InputDecoration(labelText: 'Quantity'),
                     onChanged: (_) => setState(() {}),
                   ),
                   const SizedBox(height: 12),
                   SegmentedButton<String>(
                     segments: const [
-                      ButtonSegment(value: 'Cash', label: Text('Cash'), icon: Icon(Icons.payments_rounded)),
-                      ButtonSegment(value: 'UPI', label: Text('UPI'), icon: Icon(Icons.qr_code_rounded)),
-                      ButtonSegment(value: 'Card', label: Text('Card'), icon: Icon(Icons.credit_card_rounded)),
+                      ButtonSegment(
+                        value: 'Cash',
+                        label: Text('Cash'),
+                        icon: Icon(Icons.payments_rounded),
+                      ),
+                      ButtonSegment(
+                        value: 'UPI',
+                        label: Text('UPI'),
+                        icon: Icon(Icons.qr_code_rounded),
+                      ),
+                      ButtonSegment(
+                        value: 'Card',
+                        label: Text('Card'),
+                        icon: Icon(Icons.credit_card_rounded),
+                      ),
                     ],
                     selected: {_paymentMethod},
                     onSelectionChanged: (selection) {
@@ -131,9 +163,8 @@ class _SalesScreenState extends State<SalesScreen> {
                       Expanded(
                         child: Text(
                           'Total: ${Formatters.currency(total)}',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                       FilledButton.icon(
@@ -142,7 +173,9 @@ class _SalesScreenState extends State<SalesScreen> {
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.point_of_sale_rounded),
                         label: const Text('Complete Sale'),
@@ -170,7 +203,9 @@ class _SalesScreenState extends State<SalesScreen> {
             ...provider.filteredSales.map((sale) {
               return Card(
                 child: ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.receipt_rounded)),
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.receipt_rounded),
+                  ),
                   title: Text(
                     sale.menuItemName,
                     style: const TextStyle(fontWeight: FontWeight.bold),

@@ -1,3 +1,5 @@
+import '../utils/date_parser.dart';
+
 class RecipeIngredient {
   final String ingredientName;
   final double quantity;
@@ -64,7 +66,9 @@ class RecipeModel {
       'id': id,
       'menuItemId': menuItemId,
       'menuItemName': menuItemName,
-      'ingredients': ingredients.map((ingredient) => ingredient.toMap()).toList(),
+      'ingredients': ingredients
+          .map((ingredient) => ingredient.toMap())
+          .toList(),
       'preparationCostPerUnit': preparationCostPerUnit,
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -78,25 +82,17 @@ class RecipeModel {
       menuItemName: map['menuItemName'] ?? '',
       ingredients: rawIngredients is List
           ? rawIngredients
-              .whereType<Map>()
-              .map((ingredient) => RecipeIngredient.fromMap(
+                .whereType<Map>()
+                .map(
+                  (ingredient) => RecipeIngredient.fromMap(
                     Map<String, dynamic>.from(ingredient),
-                  ))
-              .toList()
+                  ),
+                )
+                .toList()
           : const [],
       preparationCostPerUnit:
           (map['preparationCostPerUnit'] as num?)?.toDouble() ?? 0.0,
-      updatedAt: _parseDate(map['updatedAt']),
+      updatedAt: parseModelDate(map['updatedAt']),
     );
   }
-}
-
-DateTime _parseDate(dynamic value) {
-  if (value == null) return DateTime.now();
-  if (value is DateTime) return value;
-  final seconds = value.seconds;
-  if (seconds is int) {
-    return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-  }
-  return DateTime.tryParse(value.toString()) ?? DateTime.now();
 }

@@ -44,10 +44,7 @@ class PrimaryButton extends StatelessWidget {
         ),
         onPressed: isLoading ? null : onPressed,
         child: isLoading
-            ? SpinKitThreeBounce(
-                color: fgColor,
-                size: 20,
-              )
+            ? SpinKitThreeBounce(color: fgColor, size: 20)
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

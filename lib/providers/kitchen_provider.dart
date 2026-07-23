@@ -75,17 +75,18 @@ class KitchenProvider extends ChangeNotifier {
   }
 
   List<String> get sections => const [
-        'Breakfast',
-        'Lunch',
-        'Evening Snacks',
-        'Dinner',
-      ];
+    'Breakfast',
+    'Lunch',
+    'Evening Snacks',
+    'Dinner',
+  ];
 
   List<MenuItemModel> menuItemsBySection(String section) {
     final query = _menuSearchQuery.toLowerCase();
     return _menuItems.where((item) {
       final matchesSection = item.section == section;
-      final matchesSearch = query.isEmpty ||
+      final matchesSearch =
+          query.isEmpty ||
           item.name.toLowerCase().contains(query) ||
           item.section.toLowerCase().contains(query);
       return matchesSection && matchesSearch;
@@ -98,7 +99,8 @@ class KitchenProvider extends ChangeNotifier {
     return _recipes.where((recipe) {
       return recipe.menuItemName.toLowerCase().contains(query) ||
           recipe.ingredients.any(
-            (ingredient) => ingredient.ingredientName.toLowerCase().contains(query),
+            (ingredient) =>
+                ingredient.ingredientName.toLowerCase().contains(query),
           );
     }).toList();
   }
@@ -126,13 +128,20 @@ class KitchenProvider extends ChangeNotifier {
         .fold(0.0, (sum, food) => sum + food.quantityAvailable);
   }
 
-  bool isMenuItemAvailable(MenuItemModel item, List<InventoryItem> inventoryItems) {
+  bool isMenuItemAvailable(
+    MenuItemModel item,
+    List<InventoryItem> inventoryItems,
+  ) {
     final recipe = recipeForMenuItem(item.id);
     if (recipe == null || !item.isActive) return false;
 
     for (final ingredient in recipe.ingredients) {
-      final inventoryItem = _findInventoryItem(inventoryItems, ingredient.ingredientName);
-      if (inventoryItem == null || inventoryItem.totalStock < ingredient.quantity) {
+      final inventoryItem = _findInventoryItem(
+        inventoryItems,
+        ingredient.ingredientName,
+      );
+      if (inventoryItem == null ||
+          inventoryItem.totalStock < ingredient.quantity) {
         return false;
       }
     }
@@ -243,7 +252,10 @@ class KitchenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  InventoryItem? _findInventoryItem(List<InventoryItem> items, String ingredientName) {
+  InventoryItem? _findInventoryItem(
+    List<InventoryItem> items,
+    String ingredientName,
+  ) {
     final ingredientKey = _normalize(ingredientName);
     for (final item in items) {
       final itemKey = _normalize(item.itemName);

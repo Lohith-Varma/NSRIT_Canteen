@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../constants/app_constants.dart';
 import '../models/inventory_item.dart';
@@ -13,16 +13,20 @@ class InventoryService {
         .where('isDeleted', isEqualTo: false)
         .snapshots()
         .asyncMap((snapshot) async {
-      final itemIds = snapshot.docs.map((doc) => doc.id).toList();
-      final allLots = await _loadLotsForItems(itemIds);
-      final items = snapshot.docs.map((doc) {
-        final itemLots = allLots.where((lot) => lot.itemId == doc.id).toList()
-          ..sort((a, b) => a.purchaseDate.compareTo(b.purchaseDate));
-        return InventoryItem.fromMap(doc.data(), doc.id, lots: itemLots);
-      }).toList();
-      items.sort((a, b) => a.itemName.toLowerCase().compareTo(b.itemName.toLowerCase()));
-      return items;
-    });
+          final itemIds = snapshot.docs.map((doc) => doc.id).toList();
+          final allLots = await _loadLotsForItems(itemIds);
+          final items = snapshot.docs.map((doc) {
+            final itemLots =
+                allLots.where((lot) => lot.itemId == doc.id).toList()
+                  ..sort((a, b) => a.purchaseDate.compareTo(b.purchaseDate));
+            return InventoryItem.fromMap(doc.data(), doc.id, lots: itemLots);
+          }).toList();
+          items.sort(
+            (a, b) =>
+                a.itemName.toLowerCase().compareTo(b.itemName.toLowerCase()),
+          );
+          return items;
+        });
   }
 
   Future<List<InventoryItem>> getInventoryItems() async {
@@ -37,7 +41,9 @@ class InventoryService {
         ..sort((a, b) => a.purchaseDate.compareTo(b.purchaseDate));
       return InventoryItem.fromMap(doc.data(), doc.id, lots: itemLots);
     }).toList();
-    items.sort((a, b) => a.itemName.toLowerCase().compareTo(b.itemName.toLowerCase()));
+    items.sort(
+      (a, b) => a.itemName.toLowerCase().compareTo(b.itemName.toLowerCase()),
+    );
     return items;
   }
 
@@ -56,7 +62,10 @@ class InventoryService {
       status: item.status.isEmpty ? 'active' : item.status,
     );
     final batch = _db.batch();
-    batch.set(_db.collection(AppConstants.inventoryCollection).doc(docId), newItem.toMap());
+    batch.set(
+      _db.collection(AppConstants.inventoryCollection).doc(docId),
+      newItem.toMap(),
+    );
     batch.set(
       _db.collection(AppConstants.categoriesCollection).doc(newItem.category),
       {'name': newItem.category, 'createdAt': now.toIso8601String()},
@@ -75,8 +84,13 @@ class InventoryService {
       updatedItem.toMap(),
     );
     batch.set(
-      _db.collection(AppConstants.categoriesCollection).doc(updatedItem.category),
-      {'name': updatedItem.category, 'createdAt': DateTime.now().toIso8601String()},
+      _db
+          .collection(AppConstants.categoriesCollection)
+          .doc(updatedItem.category),
+      {
+        'name': updatedItem.category,
+        'createdAt': DateTime.now().toIso8601String(),
+      },
       SetOptions(merge: true),
     );
     await batch.commit();
@@ -91,25 +105,31 @@ class InventoryService {
   }
 
   Stream<List<String>> watchCategories() {
-    return _db.collection(AppConstants.categoriesCollection).snapshots().map((snapshot) {
-      final categories = snapshot.docs
-          .map((doc) => (doc.data()['name'] ?? doc.id).toString().trim())
-          .where((category) => category.isNotEmpty)
-          .toSet()
-          .toList()
-        ..sort();
+    return _db.collection(AppConstants.categoriesCollection).snapshots().map((
+      snapshot,
+    ) {
+      final categories =
+          snapshot.docs
+              .map((doc) => (doc.data()['name'] ?? doc.id).toString().trim())
+              .where((category) => category.isNotEmpty)
+              .toSet()
+              .toList()
+            ..sort();
       return categories;
     });
   }
 
   Future<List<String>> getCategories() async {
-    final snapshot = await _db.collection(AppConstants.categoriesCollection).get();
-    final categories = snapshot.docs
-        .map((doc) => (doc.data()['name'] ?? doc.id).toString().trim())
-        .where((category) => category.isNotEmpty)
-        .toSet()
-        .toList()
-      ..sort();
+    final snapshot = await _db
+        .collection(AppConstants.categoriesCollection)
+        .get();
+    final categories =
+        snapshot.docs
+            .map((doc) => (doc.data()['name'] ?? doc.id).toString().trim())
+            .where((category) => category.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
     return categories;
   }
 
@@ -125,7 +145,10 @@ class InventoryService {
   }
 
   Future<void> deleteCategory(String category) async {
-    await _db.collection(AppConstants.categoriesCollection).doc(category).delete();
+    await _db
+        .collection(AppConstants.categoriesCollection)
+        .doc(category)
+        .delete();
   }
 
   Future<List<InventoryLot>> _loadLotsForItems(List<String> itemIds) async {
@@ -137,7 +160,9 @@ class InventoryService {
           .collection(AppConstants.lotsCollection)
           .where('itemId', whereIn: chunk)
           .get();
-      lots.addAll(snapshot.docs.map((doc) => InventoryLot.fromMap(doc.data(), doc.id)));
+      lots.addAll(
+        snapshot.docs.map((doc) => InventoryLot.fromMap(doc.data(), doc.id)),
+      );
     }
     return lots;
   }

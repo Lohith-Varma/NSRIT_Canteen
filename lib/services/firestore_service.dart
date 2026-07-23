@@ -25,7 +25,9 @@ class FirestoreService {
       itemLots.sort((a, b) => a.purchaseDate.compareTo(b.purchaseDate));
       return InventoryItem.fromMap(doc.data(), doc.id, lots: itemLots);
     }).toList();
-    items.sort((a, b) => a.itemName.toLowerCase().compareTo(b.itemName.toLowerCase()));
+    items.sort(
+      (a, b) => a.itemName.toLowerCase().compareTo(b.itemName.toLowerCase()),
+    );
     return items;
   }
 
@@ -41,7 +43,10 @@ class FirestoreService {
       isDeleted: false,
       status: item.status.isEmpty ? 'active' : item.status,
     );
-    await _db.collection(AppConstants.inventoryCollection).doc(docId).set(newItem.toMap());
+    await _db
+        .collection(AppConstants.inventoryCollection)
+        .doc(docId)
+        .set(newItem.toMap());
     return docId;
   }
 
@@ -75,7 +80,9 @@ class FirestoreService {
         .orderBy('name')
         .limit(200)
         .get();
-    return snap.docs.map((doc) => SupplierModel.fromMap(doc.data(), doc.id)).toList();
+    return snap.docs
+        .map((doc) => SupplierModel.fromMap(doc.data(), doc.id))
+        .toList();
   }
 
   Future<String> addSupplier(SupplierModel supplier) async {
@@ -97,7 +104,10 @@ class FirestoreService {
   }
 
   Future<void> deleteSupplier(String supplierId) async {
-    await _db.collection(AppConstants.suppliersCollection).doc(supplierId).delete();
+    await _db
+        .collection(AppConstants.suppliersCollection)
+        .doc(supplierId)
+        .delete();
   }
 
   Future<List<PurchaseModel>> getPurchases() async {
@@ -106,7 +116,9 @@ class FirestoreService {
         .orderBy('purchaseDate', descending: true)
         .limit(200)
         .get();
-    return snap.docs.map((doc) => PurchaseModel.fromMap(doc.data(), doc.id)).toList();
+    return snap.docs
+        .map((doc) => PurchaseModel.fromMap(doc.data(), doc.id))
+        .toList();
   }
 
   Future<void> addPurchase({required PurchaseModel purchase}) async {
@@ -144,7 +156,9 @@ class FirestoreService {
     );
 
     await _db.runTransaction((transaction) async {
-      final itemRef = _db.collection(AppConstants.inventoryCollection).doc(purchase.itemId);
+      final itemRef = _db
+          .collection(AppConstants.inventoryCollection)
+          .doc(purchase.itemId);
       final itemSnapshot = await transaction.get(itemRef);
       if (!itemSnapshot.exists) {
         throw Exception('Inventory item not found for this purchase.');
@@ -170,7 +184,9 @@ class FirestoreService {
           id: movementId,
           dateTime: now,
           action: 'Purchases',
-          reference: purchase.invoiceNumber.isEmpty ? purchaseDocId : purchase.invoiceNumber,
+          reference: purchase.invoiceNumber.isEmpty
+              ? purchaseDocId
+              : purchase.invoiceNumber,
           itemName: purchase.itemName,
           quantity: purchase.quantity,
           unit: purchase.unit,

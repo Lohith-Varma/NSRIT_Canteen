@@ -4,10 +4,7 @@ class ChartPoint {
   final String label;
   final double value;
 
-  const ChartPoint({
-    required this.label,
-    required this.value,
-  });
+  const ChartPoint({required this.label, required this.value});
 }
 
 class SimpleBarChart extends StatelessWidget {
@@ -36,9 +33,9 @@ class SimpleBarChart extends StatelessWidget {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -48,8 +45,9 @@ class SimpleBarChart extends StatelessWidget {
                   : Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: points.map((point) {
-                        final heightFactor =
-                            maxValue == 0 ? 0.04 : (point.value / maxValue).clamp(0.04, 1.0);
+                        final heightFactor = maxValue == 0
+                            ? 0.04
+                            : (point.value / maxValue).clamp(0.04, 1.0);
                         return Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -62,11 +60,16 @@ class SimpleBarChart extends StatelessWidget {
                                     child: FractionallySizedBox(
                                       heightFactor: heightFactor,
                                       child: Tooltip(
-                                        message: '${point.label}: ${point.value.toStringAsFixed(2)}',
+                                        message:
+                                            '${point.label}: ${point.value.toStringAsFixed(2)}',
                                         child: DecoratedBox(
                                           decoration: BoxDecoration(
-                                            color: color.withValues(alpha: 0.82),
-                                            borderRadius: BorderRadius.circular(6),
+                                            color: color.withValues(
+                                              alpha: 0.82,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
                                           ),
                                           child: const SizedBox.expand(),
                                         ),

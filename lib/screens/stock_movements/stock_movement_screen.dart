@@ -18,7 +18,8 @@ class StockMovementScreen extends StatelessWidget {
       child: movements.isEmpty
           ? const EmptyStateWidget(
               title: 'No Stock Movements',
-              message: 'Purchases, preparation, sales, and adjustments will be listed here.',
+              message:
+                  'Purchases, preparation, sales, and adjustments will be listed here.',
               icon: Icons.swap_vert_rounded,
             )
           : ListView.builder(
@@ -33,7 +34,9 @@ class StockMovementScreen extends StatelessWidget {
                       backgroundColor: (isIn ? Colors.green : Colors.orange)
                           .withValues(alpha: 0.16),
                       child: Icon(
-                        isIn ? Icons.south_west_rounded : Icons.north_east_rounded,
+                        isIn
+                            ? Icons.south_west_rounded
+                            : Icons.north_east_rounded,
                         color: isIn ? Colors.green : Colors.orange,
                       ),
                     ),
@@ -45,7 +48,10 @@ class StockMovementScreen extends StatelessWidget {
                       '${Formatters.formatDateTime(movement.dateTime)} - Ref: ${movement.reference} - User: ${movement.user}',
                     ),
                     trailing: Text(
-                      Formatters.quantityWithUnit(movement.quantity, movement.unit),
+                      Formatters.quantityWithUnit(
+                        movement.quantity,
+                        movement.unit,
+                      ),
                       style: TextStyle(
                         color: isIn ? Colors.green : Colors.orange,
                         fontWeight: FontWeight.bold,

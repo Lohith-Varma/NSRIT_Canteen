@@ -6,10 +6,7 @@ import 'add_inventory_screen.dart';
 class EditInventoryScreen extends StatelessWidget {
   final InventoryItem item;
 
-  const EditInventoryScreen({
-    super.key,
-    required this.item,
-  });
+  const EditInventoryScreen({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {

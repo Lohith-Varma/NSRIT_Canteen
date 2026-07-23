@@ -4,10 +4,7 @@ import '../constants/app_colors.dart';
 class LowStockBadge extends StatelessWidget {
   final bool isCompact;
 
-  const LowStockBadge({
-    super.key,
-    this.isCompact = false,
-  });
+  const LowStockBadge({super.key, this.isCompact = false});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +19,11 @@ class LowStockBadge extends StatelessWidget {
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.warning_amber_rounded, size: 12, color: AppColors.danger),
+            Icon(
+              Icons.warning_amber_rounded,
+              size: 12,
+              color: AppColors.danger,
+            ),
             SizedBox(width: 4),
             Text(
               'Low Stock',

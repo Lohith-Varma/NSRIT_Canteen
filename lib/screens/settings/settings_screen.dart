@@ -24,13 +24,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    final settings =
-        Provider.of<AdminProvider>(context, listen: false).settings;
+    final settings = Provider.of<AdminProvider>(
+      context,
+      listen: false,
+    ).settings;
     _collegeController = TextEditingController(text: settings.collegeName);
     _canteenController = TextEditingController(text: settings.canteenName);
     _currencyController = TextEditingController(text: settings.currency);
-    _unitsController =
-        TextEditingController(text: settings.measurementUnits.join(', '));
+    _unitsController = TextEditingController(
+      text: settings.measurementUnits.join(', '),
+    );
     _lowStock = settings.lowStockNotifications;
     _sales = settings.salesNotifications;
     _preparation = settings.preparationNotifications;
@@ -67,8 +70,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content:
-            Text(success ? 'Settings saved.' : adminProvider.errorMessage ?? 'Save failed.'),
+        content: Text(
+          success
+              ? 'Settings saved.'
+              : adminProvider.errorMessage ?? 'Save failed.',
+        ),
       ),
     );
   }
@@ -103,7 +109,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: _unitsController,
-                  decoration: const InputDecoration(labelText: 'Measurement Units'),
+                  decoration: const InputDecoration(
+                    labelText: 'Measurement Units',
+                  ),
                 ),
                 SwitchListTile(
                   value: themeProvider.isDarkMode,
@@ -144,11 +152,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: ListTile(
             leading: const Icon(Icons.backup_rounded),
             title: const Text('Backup & Restore'),
-            subtitle: const Text('Placeholder for future cloud backup integration.'),
+            subtitle: const Text(
+              'Placeholder for future cloud backup integration.',
+            ),
             trailing: const Icon(Icons.chevron_right_rounded),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Backup & Restore will be available soon.')),
+                const SnackBar(
+                  content: Text('Backup & Restore will be available soon.'),
+                ),
               );
             },
           ),

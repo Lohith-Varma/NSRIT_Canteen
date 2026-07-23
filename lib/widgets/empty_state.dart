@@ -31,14 +31,12 @@ class EmptyStateWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: isDark ? 0.15 : 0.08),
+                color: theme.colorScheme.primary.withValues(
+                  alpha: isDark ? 0.15 : 0.08,
+                ),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 64,
-                color: theme.colorScheme.primary,
-              ),
+              child: Icon(icon, size: 64, color: theme.colorScheme.primary),
             ),
             const SizedBox(height: 24),
             Text(
@@ -55,7 +53,9 @@ class EmptyStateWidget extends StatelessWidget {
               message,
               style: TextStyle(
                 fontSize: 14,
-                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                color: theme.textTheme.bodyMedium?.color?.withValues(
+                  alpha: 0.7,
+                ),
               ),
               textAlign: TextAlign.center,
             ),

@@ -27,7 +27,11 @@ class Validators {
     return null;
   }
 
-  static String? validateNumber(String? value, String fieldName, {bool allowZero = false}) {
+  static String? validateNumber(
+    String? value,
+    String fieldName, {
+    bool allowZero = false,
+  }) {
     if (value == null || value.trim().isEmpty) {
       return '$fieldName is required';
     }

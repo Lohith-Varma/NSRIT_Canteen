@@ -77,9 +77,14 @@ class CategoryGridScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Card(
-                color: theme.colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.08),
+                color: theme.colorScheme.primary.withValues(
+                  alpha: isDark ? 0.2 : 0.08,
+                ),
                 child: ListTile(
-                  leading: const Icon(Icons.list_alt_rounded, color: AppColors.primary),
+                  leading: const Icon(
+                    Icons.list_alt_rounded,
+                    color: AppColors.primary,
+                  ),
                   title: const Text(
                     'View All Inventory Items',
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -118,7 +123,10 @@ class CategoryGridScreen extends StatelessWidget {
 
             Expanded(
               child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: 12,
@@ -154,7 +162,9 @@ class CategoryGridScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: categoryColor.withValues(alpha: 0.15),
+                                    color: categoryColor.withValues(
+                                      alpha: 0.15,
+                                    ),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Icon(
@@ -167,9 +177,14 @@ class CategoryGridScreen extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: theme.colorScheme.surfaceContainerHighest,
+                                        color: theme
+                                            .colorScheme
+                                            .surfaceContainerHighest,
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Text(
@@ -180,12 +195,19 @@ class CategoryGridScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    if (!AppConstants.categories.contains(category) && itemCount == 0)
+                                    if (!AppConstants.categories.contains(
+                                          category,
+                                        ) &&
+                                        itemCount == 0)
                                       IconButton(
                                         tooltip: 'Delete category',
                                         visualDensity: VisualDensity.compact,
-                                        icon: const Icon(Icons.delete_outline_rounded, size: 18),
-                                        onPressed: () => inventoryProvider.deleteCategory(category),
+                                        icon: const Icon(
+                                          Icons.delete_outline_rounded,
+                                          size: 18,
+                                        ),
+                                        onPressed: () => inventoryProvider
+                                            .deleteCategory(category),
                                       ),
                                   ],
                                 ),

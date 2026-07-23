@@ -96,12 +96,16 @@ class InventoryProvider extends ChangeNotifier {
   int get outOfStockCount => _items.where((item) => item.isOutOfStock).length;
 
   int get healthyStockCount {
-    return _items.where((item) => !item.isOutOfStock && !item.isLowStock).length;
+    return _items
+        .where((item) => !item.isOutOfStock && !item.isLowStock)
+        .length;
   }
 
   int get totalCategories {
     final categoriesInUse = _items.map((i) => i.category).toSet();
-    return categoriesInUse.isEmpty ? _categories.length : categoriesInUse.length;
+    return categoriesInUse.isEmpty
+        ? _categories.length
+        : categoriesInUse.length;
   }
 
   double get totalInventoryValue {
@@ -121,16 +125,21 @@ class InventoryProvider extends ChangeNotifier {
   // Filtered Items (by Category and Search Query)
   List<InventoryItem> get filteredItems {
     final filtered = _items.where((item) {
-      final matchesCategory = _selectedCategory == null || item.category == _selectedCategory;
-      final matchesStatus = _selectedStatus == null ||
+      final matchesCategory =
+          _selectedCategory == null || item.category == _selectedCategory;
+      final matchesStatus =
+          _selectedStatus == null ||
           item.status == _selectedStatus ||
           (_selectedStatus == 'low_stock' && item.isLowStock) ||
           (_selectedStatus == 'out_of_stock' && item.isOutOfStock);
-      final matchesSearch = _searchQuery.isEmpty ||
+      final matchesSearch =
+          _searchQuery.isEmpty ||
           item.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           item.category.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           item.supplier.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.storageLocation.toLowerCase().contains(_searchQuery.toLowerCase());
+          item.storageLocation.toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          );
       return matchesCategory && matchesStatus && matchesSearch;
     }).toList();
 
@@ -163,9 +172,7 @@ class InventoryProvider extends ChangeNotifier {
 
   // Count items per category
   Map<String, int> get categoryCounts {
-    final Map<String, int> counts = {
-      for (var cat in _categories) cat: 0
-    };
+    final Map<String, int> counts = {for (var cat in _categories) cat: 0};
     for (var item in _items) {
       counts[item.category] = (counts[item.category] ?? 0) + 1;
     }
@@ -267,7 +274,8 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<bool> deleteCategory(String category) async {
     if (_items.any((item) => item.category == category)) {
-      _errorMessage = 'Move or delete items in this category before removing it.';
+      _errorMessage =
+          'Move or delete items in this category before removing it.';
       notifyListeners();
       return false;
     }

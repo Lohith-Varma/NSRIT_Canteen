@@ -46,7 +46,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.lightSurface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.lightCardBorder),
@@ -68,7 +71,9 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.danger, width: 2),
         ),
         labelStyle: TextStyle(color: AppColors.lightTextSecondary),
-        hintStyle: TextStyle(color: AppColors.lightTextSecondary.withValues(alpha: 0.7)),
+        hintStyle: TextStyle(
+          color: AppColors.lightTextSecondary.withValues(alpha: 0.7),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -153,7 +158,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.darkSurface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.darkCardBorder),
@@ -175,7 +183,9 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.danger, width: 2),
         ),
         labelStyle: TextStyle(color: AppColors.darkTextSecondary),
-        hintStyle: TextStyle(color: AppColors.darkTextSecondary.withValues(alpha: 0.7)),
+        hintStyle: TextStyle(
+          color: AppColors.darkTextSecondary.withValues(alpha: 0.7),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

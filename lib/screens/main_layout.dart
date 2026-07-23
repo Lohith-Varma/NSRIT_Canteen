@@ -79,7 +79,10 @@ class _MainLayoutState extends State<MainLayout> {
           padding: const EdgeInsets.only(left: 12.0),
           child: CircleAvatar(
             backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
-            child: Icon(Icons.restaurant_rounded, color: theme.colorScheme.primary),
+            child: Icon(
+              Icons.restaurant_rounded,
+              color: theme.colorScheme.primary,
+            ),
           ),
         ),
         title: Column(
@@ -90,19 +93,27 @@ class _MainLayoutState extends State<MainLayout> {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             Text(
-              authProvider.user?.displayName ?? authProvider.user?.email ?? 'NSRIT Canteen',
+              authProvider.user?.displayName ??
+                  authProvider.user?.email ??
+                  'NSRIT Canteen',
               style: TextStyle(
                 fontSize: 12,
-                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                color: theme.textTheme.bodyMedium?.color?.withValues(
+                  alpha: 0.7,
+                ),
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            tooltip: themeProvider.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            tooltip: themeProvider.isDarkMode
+                ? 'Switch to Light Mode'
+                : 'Switch to Dark Mode',
             icon: Icon(
-              themeProvider.isDarkMode ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+              themeProvider.isDarkMode
+                  ? Icons.wb_sunny_rounded
+                  : Icons.nightlight_round,
             ),
             onPressed: () {
               themeProvider.toggleTheme(!themeProvider.isDarkMode);
@@ -167,10 +178,7 @@ class _MainLayoutState extends State<MainLayout> {
             ),
           if (isTablet) const VerticalDivider(thickness: 1, width: 1),
           Expanded(
-            child: IndexedStack(
-              index: _currentIndex,
-              children: _screens,
-            ),
+            child: IndexedStack(index: _currentIndex, children: _screens),
           ),
         ],
       ),

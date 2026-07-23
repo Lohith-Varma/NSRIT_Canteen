@@ -27,7 +27,8 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
     final confirmed = await ConfirmDialog.show(
       context,
       title: 'Delete Supplier',
-      content: 'Are you sure you want to delete supplier "${supplier.name}"? This action cannot be undone.',
+      content:
+          'Are you sure you want to delete supplier "${supplier.name}"? This action cannot be undone.',
       confirmText: 'Delete Supplier',
       isDanger: true,
     );
@@ -47,7 +48,9 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(provider.errorMessage ?? 'Failed to delete supplier.'),
+            content: Text(
+              provider.errorMessage ?? 'Failed to delete supplier.',
+            ),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -74,7 +77,8 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
                   supplierProvider.setSearchQuery(value);
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search suppliers by name, phone, GST, or address...',
+                  hintText:
+                      'Search suppliers by name, phone, GST, or address...',
                   prefixIcon: const Icon(Icons.search_rounded),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
@@ -94,7 +98,8 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
               child: suppliers.isEmpty
                   ? EmptyStateWidget(
                       title: 'No Suppliers Found',
-                      message: 'No supplier profiles match your search criteria.',
+                      message:
+                          'No supplier profiles match your search criteria.',
                       icon: Icons.people_outline_rounded,
                       buttonText: 'Add Supplier',
                       onButtonPressed: () {
@@ -102,7 +107,10 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
                       },
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
                       itemCount: suppliers.length,
                       itemBuilder: (context, index) {
                         final supplier = suppliers[index];
@@ -117,7 +125,8 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      backgroundColor: AppColors.secondary.withValues(alpha: 0.15),
+                                      backgroundColor: AppColors.secondary
+                                          .withValues(alpha: 0.15),
                                       child: const Icon(
                                         Icons.business_rounded,
                                         color: AppColors.secondary,
@@ -127,7 +136,8 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             supplier.name,
@@ -136,43 +146,67 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          if (supplier.gstNumber != null && supplier.gstNumber!.isNotEmpty)
+                                          if (supplier.gstNumber != null &&
+                                              supplier.gstNumber!.isNotEmpty)
                                             Text(
                                               'GST: ${supplier.gstNumber}',
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w500,
-                                                color: theme.colorScheme.secondary,
+                                                color:
+                                                    theme.colorScheme.secondary,
                                               ),
                                             ),
                                         ],
                                       ),
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.edit_outlined, size: 20),
+                                      icon: const Icon(
+                                        Icons.edit_outlined,
+                                        size: 20,
+                                      ),
                                       tooltip: 'Edit Supplier',
                                       onPressed: () {
-                                        AddEditSupplierDialog.show(context, supplier: supplier);
+                                        AddEditSupplierDialog.show(
+                                          context,
+                                          supplier: supplier,
+                                        );
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.delete_outline, size: 20, color: AppColors.danger),
+                                      icon: const Icon(
+                                        Icons.delete_outline,
+                                        size: 20,
+                                        color: AppColors.danger,
+                                      ),
                                       tooltip: 'Delete Supplier',
-                                      onPressed: () => _handleDeleteSupplier(supplier),
+                                      onPressed: () =>
+                                          _handleDeleteSupplier(supplier),
                                     ),
                                   ],
                                 ),
                                 const Divider(height: 20),
                                 Row(
                                   children: [
-                                    const Icon(Icons.phone_outlined, size: 16, color: Colors.grey),
+                                    const Icon(
+                                      Icons.phone_outlined,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
                                     const SizedBox(width: 8),
                                     Text(
                                       supplier.phone,
-                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                     const SizedBox(width: 16),
-                                    const Icon(Icons.email_outlined, size: 16, color: Colors.grey),
+                                    const Icon(
+                                      Icons.email_outlined,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
@@ -187,14 +221,19 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+                                    const Icon(
+                                      Icons.location_on_outlined,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         supplier.address,
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: theme.textTheme.bodySmall?.color,
+                                          color:
+                                              theme.textTheme.bodySmall?.color,
                                         ),
                                       ),
                                     ),

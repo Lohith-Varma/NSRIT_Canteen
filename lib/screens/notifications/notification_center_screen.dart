@@ -45,10 +45,9 @@ class NotificationCenterScreen extends StatelessWidget {
                       leading: CircleAvatar(
                         backgroundColor: notification.isRead
                             ? Colors.grey.withValues(alpha: 0.16)
-                            : Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withValues(alpha: 0.14),
+                            : Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.14),
                         child: Icon(_iconForType(notification.type)),
                       ),
                       title: Text(

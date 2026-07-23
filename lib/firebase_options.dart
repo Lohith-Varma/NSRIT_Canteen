@@ -32,44 +32,46 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB96rmQtWbRyLqQqYgtHF8zFNc03-2wPSw',
-    appId: '1:715141404075:web:15122945149761fd356eee',
-    messagingSenderId: '715141404075',
-    projectId: 'nsrit-canteen',
-    authDomain: 'nsrit-canteen.firebaseapp.com',
-    storageBucket: 'nsrit-canteen.firebasestorage.app',
+    apiKey: 'AIzaSyCzJySIMXnwFVatk5wLluz7P-JdDjIbpLM',
+    appId: '1:15355084605:web:41c95a1d1253cb4b640f54',
+    messagingSenderId: '15355084605',
+    projectId: 'nsrit-canteen-4de4b',
+    authDomain: 'nsrit-canteen-4de4b.firebaseapp.com',
+    storageBucket: 'nsrit-canteen-4de4b.firebasestorage.app',
+    measurementId: 'G-CV99VCC7HB',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAciuUcSSKKKCWbXJDdYcgz_eN0pP5NisI',
-    appId: '1:715141404075:android:2f568859af1fe00f356eee',
-    messagingSenderId: '715141404075',
-    projectId: 'nsrit-canteen',
-    storageBucket: 'nsrit-canteen.firebasestorage.app',
+    apiKey: 'AIzaSyAUhLwIVb3wgA6rWsCBIIDKnXhfIaLcF54',
+    appId: '1:15355084605:android:10b75113bed73f5b640f54',
+    messagingSenderId: '15355084605',
+    projectId: 'nsrit-canteen-4de4b',
+    storageBucket: 'nsrit-canteen-4de4b.firebasestorage.app',
   );
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKeyForNSRITCanteenApp123',
-    appId: '1:1234567890:ios:abcdef1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'nsrit-canteen-app',
-    storageBucket: 'nsrit-canteen-app.appspot.com',
-    iosBundleId: 'com.nsrit.canteen',
+    apiKey: 'AIzaSyDXhcq3tOKkFMo6fTDNBZTQkrgRrmqyxwU',
+    appId: '1:15355084605:ios:dcbe6e064190aeea640f54',
+    messagingSenderId: '15355084605',
+    projectId: 'nsrit-canteen-4de4b',
+    storageBucket: 'nsrit-canteen-4de4b.firebasestorage.app',
+    iosBundleId: 'com.example.nsritCanteen',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKeyForNSRITCanteenApp123',
-    appId: '1:1234567890:ios:abcdef1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'nsrit-canteen-app',
-    storageBucket: 'nsrit-canteen-app.appspot.com',
-    iosBundleId: 'com.nsrit.canteen',
+    apiKey: 'AIzaSyDXhcq3tOKkFMo6fTDNBZTQkrgRrmqyxwU',
+    appId: '1:15355084605:ios:dcbe6e064190aeea640f54',
+    messagingSenderId: '15355084605',
+    projectId: 'nsrit-canteen-4de4b',
+    storageBucket: 'nsrit-canteen-4de4b.firebasestorage.app',
+    iosBundleId: 'com.example.nsritCanteen',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKeyForNSRITCanteenApp123',
-    appId: '1:1234567890:web:abcdef1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'nsrit-canteen-app',
-    storageBucket: 'nsrit-canteen-app.appspot.com',
+    apiKey: 'AIzaSyCzJySIMXnwFVatk5wLluz7P-JdDjIbpLM',
+    appId: '1:15355084605:web:955fc8358bba4941640f54',
+    messagingSenderId: '15355084605',
+    projectId: 'nsrit-canteen-4de4b',
+    authDomain: 'nsrit-canteen-4de4b.firebaseapp.com',
+    storageBucket: 'nsrit-canteen-4de4b.firebasestorage.app',
+    measurementId: 'G-B3FKH94FZ7',
   );
 }

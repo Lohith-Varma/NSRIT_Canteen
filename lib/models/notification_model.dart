@@ -1,3 +1,5 @@
+import '../utils/date_parser.dart';
+
 class NotificationModel {
   final String id;
   final String title;
@@ -17,9 +19,7 @@ class NotificationModel {
     required this.referenceId,
   });
 
-  NotificationModel copyWith({
-    bool? isRead,
-  }) {
+  NotificationModel copyWith({bool? isRead}) {
     return NotificationModel(
       id: id,
       title: title,
@@ -48,20 +48,10 @@ class NotificationModel {
       id: docId,
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      timestamp: _parseDate(map['timestamp']),
+      timestamp: parseModelDate(map['timestamp']),
       isRead: map['isRead'] ?? false,
       type: map['type'] ?? 'General',
       referenceId: map['referenceId'] ?? '',
     );
   }
-}
-
-DateTime _parseDate(dynamic value) {
-  if (value == null) return DateTime.now();
-  if (value is DateTime) return value;
-  final seconds = value.seconds;
-  if (seconds is int) {
-    return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-  }
-  return DateTime.tryParse(value.toString()) ?? DateTime.now();
 }

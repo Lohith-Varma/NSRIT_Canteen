@@ -56,8 +56,9 @@ class UserManagementScreen extends StatelessWidget {
                     children: [
                       Chip(
                         label: Text(user.isActive ? 'Active' : 'Inactive'),
-                        backgroundColor: (user.isActive ? Colors.green : Colors.red)
-                            .withValues(alpha: 0.14),
+                        backgroundColor:
+                            (user.isActive ? Colors.green : Colors.red)
+                                .withValues(alpha: 0.14),
                       ),
                       IconButton(
                         tooltip: 'Edit',
@@ -68,13 +69,18 @@ class UserManagementScreen extends StatelessWidget {
                         tooltip: 'Reset Password',
                         icon: const Icon(Icons.lock_reset_rounded),
                         onPressed: () async {
-                          final success = await provider.resetPassword(user.email);
+                          final success = await provider.resetPassword(
+                            user.email,
+                          );
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(success
-                                    ? 'Password reset requested.'
-                                    : provider.errorMessage ?? 'Reset failed.'),
+                                content: Text(
+                                  success
+                                      ? 'Password reset requested.'
+                                      : provider.errorMessage ??
+                                            'Reset failed.',
+                                ),
                               ),
                             );
                           }
@@ -85,15 +91,18 @@ class UserManagementScreen extends StatelessWidget {
                         icon: const Icon(Icons.person_off_rounded),
                         onPressed: user.isActive
                             ? () async {
-                                final success =
-                                    await provider.deactivateUser(user.uid);
+                                final success = await provider.deactivateUser(
+                                  user.uid,
+                                );
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(success
-                                          ? 'User deactivated.'
-                                          : provider.errorMessage ??
-                                              'Deactivate failed.'),
+                                      content: Text(
+                                        success
+                                            ? 'User deactivated.'
+                                            : provider.errorMessage ??
+                                                  'Deactivate failed.',
+                                      ),
                                     ),
                                   );
                                 }
@@ -131,7 +140,9 @@ class UserManagementScreen extends StatelessWidget {
                   children: [
                     TextField(
                       controller: nameController,
-                      decoration: const InputDecoration(labelText: 'Display Name'),
+                      decoration: const InputDecoration(
+                        labelText: 'Display Name',
+                      ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -141,13 +152,15 @@ class UserManagementScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: role,
+                      initialValue: role,
                       decoration: const InputDecoration(labelText: 'Role'),
                       items: roles
-                          .map((item) => DropdownMenuItem(
-                                value: item,
-                                child: Text(item),
-                              ))
+                          .map(
+                            (item) => DropdownMenuItem(
+                              value: item,
+                              child: Text(item),
+                            ),
+                          )
                           .toList(),
                       onChanged: (value) {
                         if (value != null) {
@@ -171,8 +184,10 @@ class UserManagementScreen extends StatelessWidget {
                 ),
                 FilledButton(
                   onPressed: () async {
-                    final provider =
-                        Provider.of<AdminProvider>(context, listen: false);
+                    final provider = Provider.of<AdminProvider>(
+                      context,
+                      listen: false,
+                    );
                     final model = UserModel(
                       uid: user?.uid ?? '',
                       email: emailController.text.trim(),
@@ -187,9 +202,11 @@ class UserManagementScreen extends StatelessWidget {
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(success
-                            ? 'User saved.'
-                            : provider.errorMessage ?? 'Save failed.'),
+                        content: Text(
+                          success
+                              ? 'User saved.'
+                              : provider.errorMessage ?? 'Save failed.',
+                        ),
                       ),
                     );
                   },

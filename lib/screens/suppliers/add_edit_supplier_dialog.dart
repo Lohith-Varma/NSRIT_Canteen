@@ -36,10 +36,18 @@ class _AddEditSupplierDialogState extends State<AddEditSupplierDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.supplier?.name ?? '');
-    _phoneController = TextEditingController(text: widget.supplier?.phone ?? '');
-    _emailController = TextEditingController(text: widget.supplier?.email ?? '');
-    _addressController = TextEditingController(text: widget.supplier?.address ?? '');
-    _gstController = TextEditingController(text: widget.supplier?.gstNumber ?? '');
+    _phoneController = TextEditingController(
+      text: widget.supplier?.phone ?? '',
+    );
+    _emailController = TextEditingController(
+      text: widget.supplier?.email ?? '',
+    );
+    _addressController = TextEditingController(
+      text: widget.supplier?.address ?? '',
+    );
+    _gstController = TextEditingController(
+      text: widget.supplier?.gstNumber ?? '',
+    );
   }
 
   @override
@@ -69,7 +77,9 @@ class _AddEditSupplierDialogState extends State<AddEditSupplierDialog> {
         phone: _phoneController.text.trim(),
         email: _emailController.text.trim(),
         address: _addressController.text.trim(),
-        gstNumber: _gstController.text.trim().isEmpty ? null : _gstController.text.trim(),
+        gstNumber: _gstController.text.trim().isEmpty
+            ? null
+            : _gstController.text.trim(),
         createdAt: DateTime.now(),
       );
       success = await provider.addSupplier(newSupplier);
@@ -79,7 +89,9 @@ class _AddEditSupplierDialogState extends State<AddEditSupplierDialog> {
         phone: _phoneController.text.trim(),
         email: _emailController.text.trim(),
         address: _addressController.text.trim(),
-        gstNumber: _gstController.text.trim().isEmpty ? null : _gstController.text.trim(),
+        gstNumber: _gstController.text.trim().isEmpty
+            ? null
+            : _gstController.text.trim(),
       );
       success = await provider.updateSupplier(updatedSupplier);
     }
@@ -132,7 +144,9 @@ class _AddEditSupplierDialogState extends State<AddEditSupplierDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        widget.supplier == null ? 'Add Supplier Profile' : 'Edit Supplier Profile',
+                        widget.supplier == null
+                            ? 'Add Supplier Profile'
+                            : 'Edit Supplier Profile',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -149,7 +163,8 @@ class _AddEditSupplierDialogState extends State<AddEditSupplierDialog> {
                     label: 'Supplier / Business Name',
                     hint: 'e.g. Vizag Fresh Agro Traders',
                     controller: _nameController,
-                    validator: (v) => Validators.validateRequired(v, 'Supplier Name'),
+                    validator: (v) =>
+                        Validators.validateRequired(v, 'Supplier Name'),
                   ),
                   const SizedBox(height: 16),
 
@@ -188,7 +203,9 @@ class _AddEditSupplierDialogState extends State<AddEditSupplierDialog> {
                   const SizedBox(height: 24),
 
                   PrimaryButton(
-                    text: widget.supplier == null ? 'Create Supplier' : 'Save Changes',
+                    text: widget.supplier == null
+                        ? 'Create Supplier'
+                        : 'Save Changes',
                     isLoading: _isSaving,
                     icon: Icons.check_rounded,
                     backgroundColor: AppColors.secondary,

@@ -95,9 +95,12 @@ class ItemDetailScreen extends StatelessWidget {
                                     color: categoryColor,
                                   ),
                                 ),
-                                backgroundColor: categoryColor.withValues(alpha: 0.1),
+                                backgroundColor: categoryColor.withValues(
+                                  alpha: 0.1,
+                                ),
                                 padding: EdgeInsets.zero,
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
                               ),
                               const SizedBox(width: 8),
                               Chip(
@@ -106,20 +109,21 @@ class ItemDetailScreen extends StatelessWidget {
                                   style: const TextStyle(fontSize: 11),
                                 ),
                                 padding: EdgeInsets.zero,
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
                               ),
                             ],
-                              ),
-                              if (item.isOutOfStock) ...[
-                                const SizedBox(height: 8),
-                                const _DetailStatusBadge(
-                                  label: 'Out of Stock',
-                                  color: AppColors.danger,
-                                  icon: Icons.remove_shopping_cart_rounded,
-                                ),
-                              ] else if (item.isLowStock) ...[
-                                const SizedBox(height: 8),
-                                const LowStockBadge(),
+                          ),
+                          if (item.isOutOfStock) ...[
+                            const SizedBox(height: 8),
+                            const _DetailStatusBadge(
+                              label: 'Out of Stock',
+                              color: AppColors.danger,
+                              icon: Icons.remove_shopping_cart_rounded,
+                            ),
+                          ] else if (item.isLowStock) ...[
+                            const SizedBox(height: 8),
+                            const LowStockBadge(),
                           ],
                         ],
                       ),
@@ -148,10 +152,16 @@ class ItemDetailScreen extends StatelessWidget {
               children: [
                 _buildMetricCard(
                   title: 'Total Stock',
-                  value: Formatters.quantityWithUnit(item.totalStock, item.unit),
-                  subtitle: 'Min: ${item.minimumStock} ${item.unit} / Max: ${item.maximumStock} ${item.unit}',
+                  value: Formatters.quantityWithUnit(
+                    item.totalStock,
+                    item.unit,
+                  ),
+                  subtitle:
+                      'Min: ${item.minimumStock} ${item.unit} / Max: ${item.maximumStock} ${item.unit}',
                   icon: Icons.inventory_rounded,
-                  color: item.isOutOfStock || item.isLowStock ? AppColors.danger : AppColors.primary,
+                  color: item.isOutOfStock || item.isLowStock
+                      ? AppColors.danger
+                      : AppColors.primary,
                 ),
                 _buildMetricCard(
                   title: 'Purchase Price',
@@ -170,7 +180,9 @@ class ItemDetailScreen extends StatelessWidget {
                 _buildMetricCard(
                   title: 'Stock Value',
                   value: Formatters.currency(item.totalValue),
-                  subtitle: item.lots.isEmpty ? 'Quantity x purchase price' : '${item.lots.length} lots',
+                  subtitle: item.lots.isEmpty
+                      ? 'Quantity x purchase price'
+                      : '${item.lots.length} lots',
                   icon: Icons.account_balance_wallet_rounded,
                   color: AppColors.secondary,
                 ),
@@ -189,12 +201,38 @@ class ItemDetailScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _InfoRow(label: 'Supplier', value: item.supplier.isEmpty ? 'Not specified' : item.supplier),
-                    _InfoRow(label: 'Storage Location', value: item.storageLocation.isEmpty ? 'Not specified' : item.storageLocation),
-                    _InfoRow(label: 'Expiry Date', value: item.expiryDate == null ? 'Not set' : Formatters.formatDate(item.expiryDate!)),
-                    _InfoRow(label: 'Status', value: item.isOutOfStock ? 'Out of stock' : item.isLowStock ? 'Low stock' : 'Healthy'),
-                    _InfoRow(label: 'Updated', value: Formatters.formatDateTime(item.updatedAt)),
-                    if (item.notes.isNotEmpty) _InfoRow(label: 'Notes', value: item.notes),
+                    _InfoRow(
+                      label: 'Supplier',
+                      value: item.supplier.isEmpty
+                          ? 'Not specified'
+                          : item.supplier,
+                    ),
+                    _InfoRow(
+                      label: 'Storage Location',
+                      value: item.storageLocation.isEmpty
+                          ? 'Not specified'
+                          : item.storageLocation,
+                    ),
+                    _InfoRow(
+                      label: 'Expiry Date',
+                      value: item.expiryDate == null
+                          ? 'Not set'
+                          : Formatters.formatDate(item.expiryDate!),
+                    ),
+                    _InfoRow(
+                      label: 'Status',
+                      value: item.isOutOfStock
+                          ? 'Out of stock'
+                          : item.isLowStock
+                          ? 'Low stock'
+                          : 'Healthy',
+                    ),
+                    _InfoRow(
+                      label: 'Updated',
+                      value: Formatters.formatDateTime(item.updatedAt),
+                    ),
+                    if (item.notes.isNotEmpty)
+                      _InfoRow(label: 'Notes', value: item.notes),
                   ],
                 ),
               ),
@@ -225,7 +263,9 @@ class ItemDetailScreen extends StatelessWidget {
               'Every purchase is stored as a separate lot. Average cost is computed as: Sum(Lot Qty × Lot Price) / Total Qty.',
               style: TextStyle(
                 fontSize: 12,
-                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                color: theme.textTheme.bodyMedium?.color?.withValues(
+                  alpha: 0.7,
+                ),
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -258,12 +298,18 @@ class ItemDetailScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withValues(alpha: 0.1),
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.1,
+                                      ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -286,15 +332,20 @@ class ItemDetailScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 10),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Quantity: ${Formatters.quantityWithUnit(lot.quantity, lot.unit)}',
-                                    style: const TextStyle(fontWeight: FontWeight.w600),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                   Text(
                                     'Purchase Price: ₹${lot.unitPrice} / ${lot.unit}',
-                                    style: const TextStyle(fontWeight: FontWeight.w600),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -328,7 +379,8 @@ class ItemDetailScreen extends StatelessWidget {
                 final confirmed = await ConfirmDialog.show(
                   context,
                   title: 'Delete Item',
-                  content: 'This will soft delete "${item.name}" from active inventory.',
+                  content:
+                      'This will soft delete "${item.name}" from active inventory.',
                   confirmText: 'Delete',
                   isDanger: true,
                 );
@@ -343,7 +395,9 @@ class ItemDetailScreen extends StatelessWidget {
                             ? '${item.name} deleted successfully.'
                             : provider.errorMessage ?? 'Failed to delete item.',
                       ),
-                      backgroundColor: success ? AppColors.success : AppColors.danger,
+                      backgroundColor: success
+                          ? AppColors.success
+                          : AppColors.danger,
                     ),
                   );
                   if (success) {
@@ -382,14 +436,22 @@ class ItemDetailScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
                 ),
                 Icon(icon, color: color, size: 18),
               ],
             ),
             Text(
               value,
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: color),
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -408,10 +470,7 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoRow({
-    required this.label,
-    required this.value,
-  });
+  const _InfoRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -468,7 +527,11 @@ class _DetailStatusBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
           ),
         ],
       ),

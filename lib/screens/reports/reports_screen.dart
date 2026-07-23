@@ -34,10 +34,22 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   void _generateReport() {
     final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-    final kitchenProvider = Provider.of<KitchenProvider>(context, listen: false);
-    final purchaseProvider = Provider.of<PurchaseProvider>(context, listen: false);
-    final inventoryProvider = Provider.of<InventoryProvider>(context, listen: false);
-    final supplierProvider = Provider.of<SupplierProvider>(context, listen: false);
+    final kitchenProvider = Provider.of<KitchenProvider>(
+      context,
+      listen: false,
+    );
+    final purchaseProvider = Provider.of<PurchaseProvider>(
+      context,
+      listen: false,
+    );
+    final inventoryProvider = Provider.of<InventoryProvider>(
+      context,
+      listen: false,
+    );
+    final supplierProvider = Provider.of<SupplierProvider>(
+      context,
+      listen: false,
+    );
 
     setState(() {
       _report = adminProvider.buildReport(
@@ -54,9 +66,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Future<void> _copyExport(String label, String content) async {
     await Clipboard.setData(ClipboardData(text: content));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label copied to clipboard.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$label copied to clipboard.')));
   }
 
   @override
@@ -77,13 +89,13 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 SizedBox(
                   width: 280,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedReport,
+                    initialValue: _selectedReport,
                     decoration: const InputDecoration(labelText: 'Report Type'),
                     items: _reportTypes
-                        .map((type) => DropdownMenuItem(
-                              value: type,
-                              child: Text(type),
-                            ))
+                        .map(
+                          (type) =>
+                              DropdownMenuItem(value: type, child: Text(type)),
+                        )
                         .toList(),
                     onChanged: (value) {
                       if (value != null) {
@@ -106,8 +118,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     label: const Text('CSV'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () =>
-                        _copyExport('PDF-ready report', report.toPrintableText()),
+                    onPressed: () => _copyExport(
+                      'PDF-ready report',
+                      report.toPrintableText(),
+                    ),
                     icon: const Icon(Icons.picture_as_pdf_rounded),
                     label: const Text('PDF'),
                   ),
@@ -117,8 +131,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     label: const Text('Print'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () =>
-                        _copyExport('Shareable report', report.toPrintableText()),
+                    onPressed: () => _copyExport(
+                      'Shareable report',
+                      report.toPrintableText(),
+                    ),
                     icon: const Icon(Icons.share_rounded),
                     label: const Text('Share'),
                   ),
@@ -147,8 +163,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   Text(
                     report.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   SingleChildScrollView(

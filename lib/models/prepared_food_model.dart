@@ -1,3 +1,5 @@
+import '../utils/date_parser.dart';
+
 class LotConsumption {
   final String inventoryItemId;
   final String ingredientName;
@@ -71,8 +73,10 @@ class PreparedFoodModel {
     required this.preparedBy,
   });
 
-  double get estimatedProfit => (sellingPrice * quantityPrepared) - actualFoodCost;
-  double get costPerUnit => quantityPrepared == 0 ? 0 : actualFoodCost / quantityPrepared;
+  double get estimatedProfit =>
+      (sellingPrice * quantityPrepared) - actualFoodCost;
+  double get costPerUnit =>
+      quantityPrepared == 0 ? 0 : actualFoodCost / quantityPrepared;
 
   Map<String, dynamic> toMap() {
     return {
@@ -105,22 +109,15 @@ class PreparedFoodModel {
       sellingPrice: (map['sellingPrice'] as num?)?.toDouble() ?? 0.0,
       lotConsumptions: rawLots is List
           ? rawLots
-              .whereType<Map>()
-              .map((lot) => LotConsumption.fromMap(Map<String, dynamic>.from(lot)))
-              .toList()
+                .whereType<Map>()
+                .map(
+                  (lot) =>
+                      LotConsumption.fromMap(Map<String, dynamic>.from(lot)),
+                )
+                .toList()
           : const [],
-      preparedAt: _parseDate(map['preparedAt']),
+      preparedAt: parseModelDate(map['preparedAt']),
       preparedBy: map['preparedBy'] ?? '',
     );
   }
-}
-
-DateTime _parseDate(dynamic value) {
-  if (value == null) return DateTime.now();
-  if (value is DateTime) return value;
-  final seconds = value.seconds;
-  if (seconds is int) {
-    return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-  }
-  return DateTime.tryParse(value.toString()) ?? DateTime.now();
 }

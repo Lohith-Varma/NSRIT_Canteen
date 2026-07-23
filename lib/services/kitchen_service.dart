@@ -39,16 +39,21 @@ class KitchenService {
   final InventoryService _inventoryService = InventoryService();
 
   Future<List<MenuItemModel>> getMenuItems() async {
-    final snapshot = await _db.collection(AppConstants.menuItemsCollection).get();
-    final items =
-        snapshot.docs.map((doc) => MenuItemModel.fromMap(doc.data(), doc.id)).toList();
+    final snapshot = await _db
+        .collection(AppConstants.menuItemsCollection)
+        .get();
+    final items = snapshot.docs
+        .map((doc) => MenuItemModel.fromMap(doc.data(), doc.id))
+        .toList();
     items.sort((a, b) => a.name.compareTo(b.name));
     return items;
   }
 
   Future<List<RecipeModel>> getRecipes() async {
     final snapshot = await _db.collection(AppConstants.recipesCollection).get();
-    return snapshot.docs.map((doc) => RecipeModel.fromMap(doc.data(), doc.id)).toList();
+    return snapshot.docs
+        .map((doc) => RecipeModel.fromMap(doc.data(), doc.id))
+        .toList();
   }
 
   Future<List<PreparedFoodModel>> getPreparedFood() async {
@@ -68,7 +73,9 @@ class KitchenService {
         .orderBy('soldAt', descending: true)
         .limit(150)
         .get();
-    return snapshot.docs.map((doc) => SaleModel.fromMap(doc.data(), doc.id)).toList();
+    return snapshot.docs
+        .map((doc) => SaleModel.fromMap(doc.data(), doc.id))
+        .toList();
   }
 
   Future<List<StockMovementModel>> getStockMovements() async {
@@ -104,7 +111,10 @@ class KitchenService {
     var ingredientCost = 0.0;
 
     for (final ingredient in recipe.ingredients) {
-      final inventoryItem = _findInventoryItem(inventoryItems, ingredient.ingredientName);
+      final inventoryItem = _findInventoryItem(
+        inventoryItems,
+        ingredient.ingredientName,
+      );
       final requiredQuantity = ingredient.quantity * preparationQuantity;
       final availableQuantity = inventoryItem?.totalStock ?? 0.0;
       final estimatedCost = _estimateFifoCost(inventoryItem, requiredQuantity);
@@ -212,9 +222,13 @@ class KitchenService {
       var ingredientCost = 0.0;
 
       for (final ingredient in recipe.ingredients) {
-        final inventoryItem = _findInventoryItem(inventoryItems, ingredient.ingredientName);
+        final inventoryItem = _findInventoryItem(
+          inventoryItems,
+          ingredient.ingredientName,
+        );
         final requiredQuantity = ingredient.quantity * preparationQuantity;
-        if (inventoryItem == null || inventoryItem.totalStock < requiredQuantity) {
+        if (inventoryItem == null ||
+            inventoryItem.totalStock < requiredQuantity) {
           throw Exception('Insufficient ${ingredient.ingredientName}.');
         }
 
@@ -248,7 +262,9 @@ class KitchenService {
         }
 
         transaction.update(
-          _db.collection(AppConstants.inventoryCollection).doc(inventoryItem.id),
+          _db
+              .collection(AppConstants.inventoryCollection)
+              .doc(inventoryItem.id),
           {
             'quantity': inventoryItem.totalStock - requiredQuantity,
             'updatedAt': DateTime.now().toIso8601String(),
@@ -271,7 +287,8 @@ class KitchenService {
         );
       }
 
-      final preparationCost = recipe.preparationCostPerUnit * preparationQuantity;
+      final preparationCost =
+          recipe.preparationCostPerUnit * preparationQuantity;
       final preparedFood = PreparedFoodModel(
         id: preparationId,
         menuItemId: menuItem.id,
@@ -308,11 +325,15 @@ class KitchenService {
           .orderBy('quantityAvailable')
           .get();
 
-      final batches = preparedSnapshot.docs
-          .map((doc) => PreparedFoodModel.fromMap(doc.data(), doc.id))
-          .toList()
-        ..sort((a, b) => a.preparedAt.compareTo(b.preparedAt));
-      final available = batches.fold(0.0, (sum, food) => sum + food.quantityAvailable);
+      final batches =
+          preparedSnapshot.docs
+              .map((doc) => PreparedFoodModel.fromMap(doc.data(), doc.id))
+              .toList()
+            ..sort((a, b) => a.preparedAt.compareTo(b.preparedAt));
+      final available = batches.fold(
+        0.0,
+        (total, food) => total + food.quantityAvailable,
+      );
       if (available < quantity) {
         throw Exception('Only $available prepared units are available.');
       }
@@ -320,7 +341,9 @@ class KitchenService {
       var remaining = quantity;
       for (final batch in batches) {
         if (remaining <= 0) break;
-        final used = remaining > batch.quantityAvailable ? batch.quantityAvailable : remaining;
+        final used = remaining > batch.quantityAvailable
+            ? batch.quantityAvailable
+            : remaining;
         transaction.update(
           _db.collection(AppConstants.preparedFoodCollection).doc(batch.id),
           {'quantityAvailable': batch.quantityAvailable - used},
@@ -361,7 +384,10 @@ class KitchenService {
     });
   }
 
-  InventoryItem? _findInventoryItem(List<InventoryItem> items, String ingredientName) {
+  InventoryItem? _findInventoryItem(
+    List<InventoryItem> items,
+    String ingredientName,
+  ) {
     final ingredientKey = _normalize(ingredientName);
     for (final item in items) {
       final itemKey = _normalize(item.itemName);

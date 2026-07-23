@@ -26,7 +26,15 @@ class AppSettingsModel {
       collegeName: 'NSRIT',
       canteenName: 'Smart Canteen',
       currency: 'INR',
-      measurementUnits: ['kg', 'g', 'litre', 'ml', 'pieces', 'packets', 'boxes'],
+      measurementUnits: [
+        'kg',
+        'g',
+        'litre',
+        'ml',
+        'pieces',
+        'packets',
+        'boxes',
+      ],
       darkMode: false,
       lowStockNotifications: true,
       salesNotifications: true,
@@ -52,7 +60,8 @@ class AppSettingsModel {
       currency: currency ?? this.currency,
       measurementUnits: measurementUnits ?? this.measurementUnits,
       darkMode: darkMode ?? this.darkMode,
-      lowStockNotifications: lowStockNotifications ?? this.lowStockNotifications,
+      lowStockNotifications:
+          lowStockNotifications ?? this.lowStockNotifications,
       salesNotifications: salesNotifications ?? this.salesNotifications,
       preparationNotifications:
           preparationNotifications ?? this.preparationNotifications,

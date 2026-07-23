@@ -80,8 +80,8 @@ class MenuScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CircleAvatar(
-                            backgroundColor:
-                                theme.colorScheme.primary.withValues(alpha: 0.12),
+                            backgroundColor: theme.colorScheme.primary
+                                .withValues(alpha: 0.12),
                             child: Icon(icon, color: theme.colorScheme.primary),
                           ),
                           const Spacer(),
@@ -124,10 +124,7 @@ class MenuScreen extends StatelessWidget {
 class MenuSectionScreen extends StatelessWidget {
   final String section;
 
-  const MenuSectionScreen({
-    super.key,
-    required this.section,
-  });
+  const MenuSectionScreen({super.key, required this.section});
 
   @override
   Widget build(BuildContext context) {
@@ -171,15 +168,15 @@ class _MenuItemCard extends StatelessWidget {
   final MenuItemModel item;
   final bool available;
 
-  const _MenuItemCard({
-    required this.item,
-    required this.available,
-  });
+  const _MenuItemCard({required this.item, required this.available});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final kitchenProvider = Provider.of<KitchenProvider>(context, listen: false);
+    final kitchenProvider = Provider.of<KitchenProvider>(
+      context,
+      listen: false,
+    );
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -201,7 +198,7 @@ class _MenuItemCard extends StatelessWidget {
                   Image.network(
                     item.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (context, error, stackTrace) => Container(
                       color: theme.colorScheme.surfaceContainerHighest,
                       child: const Icon(Icons.restaurant_rounded, size: 48),
                     ),

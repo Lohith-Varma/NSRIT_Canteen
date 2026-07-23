@@ -16,8 +16,11 @@ class AdminService {
         .orderBy('createdAt', descending: true)
         .limit(100)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => UserModel.fromMap(doc.data(), doc.id)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => UserModel.fromMap(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   Future<List<UserModel>> getUsers() async {
@@ -26,12 +29,16 @@ class AdminService {
         .orderBy('createdAt', descending: true)
         .limit(100)
         .get();
-    return snapshot.docs.map((doc) => UserModel.fromMap(doc.data(), doc.id)).toList();
+    return snapshot.docs
+        .map((doc) => UserModel.fromMap(doc.data(), doc.id))
+        .toList();
   }
 
   Future<void> saveUser(UserModel user) async {
     if (user.uid.trim().isEmpty) {
-      throw Exception('User id is required. Create accounts from Firebase Authentication first.');
+      throw Exception(
+        'User id is required. Create accounts from Firebase Authentication first.',
+      );
     }
     final normalizedUser = user.copyWith(updatedAt: DateTime.now());
     await _db
@@ -56,7 +63,10 @@ class AdminService {
   }
 
   Future<AppSettingsModel> getSettings() async {
-    final doc = await _db.collection(AppConstants.settingsCollection).doc('app').get();
+    final doc = await _db
+        .collection(AppConstants.settingsCollection)
+        .doc('app')
+        .get();
     if (doc.exists && doc.data() != null) {
       return AppSettingsModel.fromMap(doc.data()!);
     }
@@ -83,12 +93,16 @@ class AdminService {
         .toList();
   }
 
-  Future<void> upsertNotifications(List<NotificationModel> notifications) async {
+  Future<void> upsertNotifications(
+    List<NotificationModel> notifications,
+  ) async {
     if (notifications.isEmpty) return;
     final batch = _db.batch();
     for (final notification in notifications.take(100)) {
       batch.set(
-        _db.collection(AppConstants.notificationsCollection).doc(notification.id),
+        _db
+            .collection(AppConstants.notificationsCollection)
+            .doc(notification.id),
         notification.toMap(),
         SetOptions(merge: true),
       );

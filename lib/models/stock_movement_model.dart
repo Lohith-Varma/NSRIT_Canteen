@@ -1,3 +1,5 @@
+import '../utils/date_parser.dart';
+
 class StockMovementModel {
   final String id;
   final DateTime dateTime;
@@ -35,7 +37,7 @@ class StockMovementModel {
   factory StockMovementModel.fromMap(Map<String, dynamic> map, String docId) {
     return StockMovementModel(
       id: docId,
-      dateTime: _parseDate(map['dateTime'] ?? map['createdAt']),
+      dateTime: parseModelDate(map['dateTime'] ?? map['createdAt']),
       action: map['action'] ?? '',
       reference: map['reference'] ?? '',
       itemName: map['itemName'] ?? '',
@@ -44,14 +46,4 @@ class StockMovementModel {
       user: map['user'] ?? '',
     );
   }
-}
-
-DateTime _parseDate(dynamic value) {
-  if (value == null) return DateTime.now();
-  if (value is DateTime) return value;
-  final seconds = value.seconds;
-  if (seconds is int) {
-    return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-  }
-  return DateTime.tryParse(value.toString()) ?? DateTime.now();
 }

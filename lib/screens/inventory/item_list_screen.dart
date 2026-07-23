@@ -42,7 +42,8 @@ class _ItemListScreenState extends State<ItemListScreen> {
     final confirmed = await ConfirmDialog.show(
       context,
       title: 'Delete Item',
-      content: 'Are you sure you want to delete "${item.name}"? The item will be hidden from active inventory and retained for audit history.',
+      content:
+          'Are you sure you want to delete "${item.name}"? The item will be hidden from active inventory and retained for audit history.',
       confirmText: 'Delete Item',
       isDanger: true,
     );
@@ -128,24 +129,45 @@ class _ItemListScreenState extends State<ItemListScreen> {
                   _FilterChip(
                     label: 'Low Stock',
                     selected: inventoryProvider.selectedStatus == 'low_stock',
-                    onSelected: () => inventoryProvider.setSelectedStatus('low_stock'),
+                    onSelected: () =>
+                        inventoryProvider.setSelectedStatus('low_stock'),
                   ),
                   _FilterChip(
                     label: 'Out of Stock',
-                    selected: inventoryProvider.selectedStatus == 'out_of_stock',
-                    onSelected: () => inventoryProvider.setSelectedStatus('out_of_stock'),
+                    selected:
+                        inventoryProvider.selectedStatus == 'out_of_stock',
+                    onSelected: () =>
+                        inventoryProvider.setSelectedStatus('out_of_stock'),
                   ),
                   const SizedBox(width: 8),
                   DropdownButton<InventorySortOption>(
                     value: inventoryProvider.sortOption,
                     underline: const SizedBox.shrink(),
                     items: const [
-                      DropdownMenuItem(value: InventorySortOption.nameAsc, child: Text('Name A-Z')),
-                      DropdownMenuItem(value: InventorySortOption.nameDesc, child: Text('Name Z-A')),
-                      DropdownMenuItem(value: InventorySortOption.quantityLow, child: Text('Stock Low-High')),
-                      DropdownMenuItem(value: InventorySortOption.quantityHigh, child: Text('Stock High-Low')),
-                      DropdownMenuItem(value: InventorySortOption.updatedNewest, child: Text('Recently Updated')),
-                      DropdownMenuItem(value: InventorySortOption.expirySoon, child: Text('Expiry Soon')),
+                      DropdownMenuItem(
+                        value: InventorySortOption.nameAsc,
+                        child: Text('Name A-Z'),
+                      ),
+                      DropdownMenuItem(
+                        value: InventorySortOption.nameDesc,
+                        child: Text('Name Z-A'),
+                      ),
+                      DropdownMenuItem(
+                        value: InventorySortOption.quantityLow,
+                        child: Text('Stock Low-High'),
+                      ),
+                      DropdownMenuItem(
+                        value: InventorySortOption.quantityHigh,
+                        child: Text('Stock High-Low'),
+                      ),
+                      DropdownMenuItem(
+                        value: InventorySortOption.updatedNewest,
+                        child: Text('Recently Updated'),
+                      ),
+                      DropdownMenuItem(
+                        value: InventorySortOption.expirySoon,
+                        child: Text('Expiry Soon'),
+                      ),
                     ],
                     onChanged: (option) {
                       if (option != null) {
@@ -171,15 +193,23 @@ class _ItemListScreenState extends State<ItemListScreen> {
                       icon: Icons.inventory_2_outlined,
                       buttonText: 'Add New Item',
                       onButtonPressed: () {
-                        AddEditItemDialog.show(context, initialCategory: widget.category);
+                        AddEditItemDialog.show(
+                          context,
+                          initialCategory: widget.category,
+                        );
                       },
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
                       itemCount: items.length,
                       itemBuilder: (context, index) {
                         final item = items[index];
-                        final categoryColor = AppColors.getCategoryColor(item.category);
+                        final categoryColor = AppColors.getCategoryColor(
+                          item.category,
+                        );
 
                         return Card(
                           margin: const EdgeInsets.only(bottom: 12),
@@ -198,16 +228,23 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         padding: const EdgeInsets.all(10),
                                         decoration: BoxDecoration(
-                                          color: categoryColor.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(12),
+                                          color: categoryColor.withValues(
+                                            alpha: 0.15,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: Icon(
-                                          AppConstants.getCategoryIcon(item.category),
+                                          AppConstants.getCategoryIcon(
+                                            item.category,
+                                          ),
                                           color: categoryColor,
                                           size: 22,
                                         ),
@@ -215,7 +252,8 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               item.name,
@@ -229,7 +267,10 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                               'Category: ${item.category}',
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: theme.textTheme.bodySmall?.color,
+                                                color: theme
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.color,
                                               ),
                                             ),
                                           ],
@@ -238,7 +279,10 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                       PopupMenuButton<String>(
                                         onSelected: (value) {
                                           if (value == 'edit') {
-                                            AddEditItemDialog.show(context, item: item);
+                                            AddEditItemDialog.show(
+                                              context,
+                                              item: item,
+                                            );
                                           } else if (value == 'delete') {
                                             _handleDeleteItem(item);
                                           }
@@ -248,7 +292,10 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                             value: 'edit',
                                             child: Row(
                                               children: [
-                                                Icon(Icons.edit_outlined, size: 18),
+                                                Icon(
+                                                  Icons.edit_outlined,
+                                                  size: 18,
+                                                ),
                                                 SizedBox(width: 8),
                                                 Text('Edit Item'),
                                               ],
@@ -258,9 +305,18 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                             value: 'delete',
                                             child: Row(
                                               children: [
-                                                Icon(Icons.delete_outline, size: 18, color: AppColors.danger),
+                                                Icon(
+                                                  Icons.delete_outline,
+                                                  size: 18,
+                                                  color: AppColors.danger,
+                                                ),
                                                 SizedBox(width: 8),
-                                                Text('Delete Item', style: TextStyle(color: AppColors.danger)),
+                                                Text(
+                                                  'Delete Item',
+                                                  style: TextStyle(
+                                                    color: AppColors.danger,
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -270,53 +326,76 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                   ),
                                   const Divider(height: 20),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'Current Stock',
                                             style: TextStyle(
                                               fontSize: 11,
-                                              color: theme.textTheme.bodySmall?.color,
+                                              color: theme
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
                                             ),
                                           ),
                                           const SizedBox(height: 2),
                                           Row(
                                             children: [
                                               Text(
-                                                Formatters.quantityWithUnit(item.totalStock, item.unit),
+                                                Formatters.quantityWithUnit(
+                                                  item.totalStock,
+                                                  item.unit,
+                                                ),
                                                 style: TextStyle(
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.bold,
-                                                  color: item.isOutOfStock || item.isLowStock ? AppColors.danger : AppColors.primary,
+                                                  color:
+                                                      item.isOutOfStock ||
+                                                          item.isLowStock
+                                                      ? AppColors.danger
+                                                      : AppColors.primary,
                                                 ),
                                               ),
                                               if (item.isOutOfStock) ...[
                                                 const SizedBox(width: 8),
-                                                const _StatusBadge(label: 'Out', color: AppColors.danger),
+                                                const _StatusBadge(
+                                                  label: 'Out',
+                                                  color: AppColors.danger,
+                                                ),
                                               ] else if (item.isLowStock) ...[
                                                 const SizedBox(width: 8),
-                                                const LowStockBadge(isCompact: true),
+                                                const LowStockBadge(
+                                                  isCompact: true,
+                                                ),
                                               ],
                                             ],
                                           ),
                                         ],
                                       ),
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         children: [
                                           Text(
                                             'Selling Price',
                                             style: TextStyle(
                                               fontSize: 11,
-                                              color: theme.textTheme.bodySmall?.color,
+                                              color: theme
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
                                             ),
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
-                                            Formatters.currency(item.sellingPrice),
+                                            Formatters.currency(
+                                              item.sellingPrice,
+                                            ),
                                             style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
@@ -369,10 +448,7 @@ class _StatusBadge extends StatelessWidget {
   final String label;
   final Color color;
 
-  const _StatusBadge({
-    required this.label,
-    required this.color,
-  });
+  const _StatusBadge({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -384,7 +460,11 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
