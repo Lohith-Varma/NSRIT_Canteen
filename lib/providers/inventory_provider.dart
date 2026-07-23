@@ -27,6 +27,7 @@ class InventoryProvider extends ChangeNotifier {
   InventorySortOption _sortOption = InventorySortOption.nameAsc;
   StreamSubscription<List<InventoryItem>>? _inventorySubscription;
   StreamSubscription<List<String>>? _categorySubscription;
+  bool _syncStarted = false;
 
   List<InventoryItem> get items => _items;
   List<String> get categories => _categories;
@@ -37,11 +38,9 @@ class InventoryProvider extends ChangeNotifier {
   String? get selectedStatus => _selectedStatus;
   InventorySortOption get sortOption => _sortOption;
 
-  InventoryProvider() {
-    startRealtimeSync();
-  }
-
   void startRealtimeSync() {
+    if (_syncStarted) return;
+    _syncStarted = true;
     _isLoading = true;
     notifyListeners();
 
@@ -58,6 +57,7 @@ class InventoryProvider extends ChangeNotifier {
       onError: (Object error) {
         _errorMessage = 'Failed to sync inventory: $error';
         _isLoading = false;
+        _syncStarted = false;
         notifyListeners();
       },
     );

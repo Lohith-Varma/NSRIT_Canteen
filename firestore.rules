@@ -1,0 +1,110 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function role() {
+      return signedIn() && userDoc().data.isActive == true
+        ? userDoc().data.role
+        : null;
+    }
+
+    function isAdmin() {
+      return role() == 'Administrator';
+    }
+
+    function hasAnyRole(roles) {
+      return role() in roles;
+    }
+
+    function sameUserProfile(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function selfServiceUserRole() {
+      return request.resource.data.role in ['Cashier', 'Cook', 'Store Manager'];
+    }
+
+    match /users/{uid} {
+      allow get: if sameUserProfile(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isAdmin() ||
+        (
+          sameUserProfile(uid) &&
+          request.resource.data.uid == uid &&
+          request.resource.data.email == request.auth.token.email &&
+          request.resource.data.isActive == true &&
+          selfServiceUserRole()
+        );
+      allow update, delete: if isAdmin();
+    }
+
+    match /settings/{document} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /notifications/{document} {
+      allow read, write: if isAdmin();
+    }
+
+    match /categories/{document} {
+      allow read: if hasAnyRole(['Administrator', 'Store Manager', 'Cook']);
+      allow write: if hasAnyRole(['Administrator', 'Store Manager']);
+    }
+
+    match /inventory/{document} {
+      allow read: if hasAnyRole(['Administrator', 'Store Manager', 'Cook']);
+      allow write: if hasAnyRole(['Administrator', 'Store Manager', 'Cook']);
+    }
+
+    match /inventory_lots/{document} {
+      allow read: if hasAnyRole(['Administrator', 'Store Manager', 'Cook']);
+      allow write: if hasAnyRole(['Administrator', 'Store Manager', 'Cook']);
+    }
+
+    match /suppliers/{document} {
+      allow read, write: if hasAnyRole(['Administrator', 'Store Manager']);
+    }
+
+    match /purchases/{document} {
+      allow read, write: if hasAnyRole(['Administrator', 'Store Manager']);
+    }
+
+    match /menu_items/{document} {
+      allow read: if hasAnyRole(['Administrator', 'Cook', 'Cashier']);
+      allow write: if hasAnyRole(['Administrator', 'Cook']);
+    }
+
+    match /recipes/{document} {
+      allow read: if hasAnyRole(['Administrator', 'Cook']);
+      allow write: if hasAnyRole(['Administrator', 'Cook']);
+    }
+
+    match /prepared_food/{document} {
+      allow read: if hasAnyRole(['Administrator', 'Cook', 'Cashier']);
+      allow write: if hasAnyRole(['Administrator', 'Cook', 'Cashier']);
+    }
+
+    match /sales/{document} {
+      allow read: if hasAnyRole(['Administrator', 'Cashier']);
+      allow write: if hasAnyRole(['Administrator', 'Cashier']);
+    }
+
+    match /stock_movements/{document} {
+      allow read: if hasAnyRole(['Administrator', 'Store Manager', 'Cook', 'Cashier']);
+      allow write: if hasAnyRole(['Administrator', 'Store Manager', 'Cook', 'Cashier']);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

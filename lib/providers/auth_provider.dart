@@ -19,11 +19,19 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void _init() {
-    _authService.authStateChanges.listen((user) {
-      _user = user;
-      _isLoading = false;
-      notifyListeners();
-    });
+    _authService.authStateChanges.listen(
+      (user) {
+        _user = user;
+        _isLoading = false;
+        notifyListeners();
+      },
+      onError: (Object error) {
+        _user = null;
+        _errorMessage = error.toString().replaceAll('Exception: ', '');
+        _isLoading = false;
+        notifyListeners();
+      },
+    );
   }
 
   Future<bool> signIn(String email, String password) async {

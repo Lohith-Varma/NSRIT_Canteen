@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_colors.dart';
+import '../../providers/admin_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/inventory_provider.dart';
 import '../../providers/supplier_provider.dart';
 import '../../providers/purchase_provider.dart';
@@ -24,6 +26,8 @@ class DashboardScreen extends StatelessWidget {
     final supplierProvider = Provider.of<SupplierProvider>(context);
     final purchaseProvider = Provider.of<PurchaseProvider>(context);
     final kitchenProvider = Provider.of<KitchenProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
+    final adminProvider = Provider.of<AdminProvider>(context);
 
     final screenWidth = MediaQuery.of(context).size.width;
     final gridCrossAxisCount = screenWidth > 900
@@ -32,6 +36,14 @@ class DashboardScreen extends StatelessWidget {
 
     final lowStockList = inventoryProvider.lowStockItems;
     final recentPurchases = purchaseProvider.recentPurchases;
+    final canManageInventory = adminProvider.hasAccess(
+      authProvider.user,
+      'Inventory',
+    );
+    final canManagePurchases = adminProvider.hasAccess(
+      authProvider.user,
+      'Purchases',
+    );
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -76,44 +88,50 @@ class DashboardScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.secondary,
-                            foregroundColor: Colors.white,
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const AddPurchaseScreen(),
+                    if (canManageInventory || canManagePurchases)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if (canManagePurchases)
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.secondary,
+                                foregroundColor: Colors.white,
                               ),
-                            );
-                          },
-                          icon: const Icon(Icons.add_shopping_cart, size: 18),
-                          label: const Text('+ Purchase'),
-                        ),
-                        OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            side: BorderSide(
-                              color: Colors.white.withValues(alpha: 0.7),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const AddPurchaseScreen(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.add_shopping_cart,
+                                size: 18,
+                              ),
+                              label: const Text('+ Purchase'),
                             ),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const AddInventoryScreen(),
+                          if (canManageInventory)
+                            OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                side: BorderSide(
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                ),
                               ),
-                            );
-                          },
-                          icon: const Icon(Icons.add_rounded, size: 18),
-                          label: const Text('Item'),
-                        ),
-                      ],
-                    ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const AddInventoryScreen(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.add_rounded, size: 18),
+                              label: const Text('Item'),
+                            ),
+                        ],
+                      ),
                   ],
                 ),
               ),
@@ -312,13 +330,16 @@ class DashboardScreen extends StatelessWidget {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ItemDetailScreen(item: item),
-                              ),
-                            );
-                          },
+                          onTap: canManageInventory
+                              ? () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          ItemDetailScreen(item: item),
+                                    ),
+                                  );
+                                }
+                              : null,
                           leading: CircleAvatar(
                             backgroundColor: AppColors.danger.withValues(
                               alpha: 0.15,
@@ -381,10 +402,11 @@ class DashboardScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             recentPurchases.isEmpty
-                ? const EmptyStateWidget(
+                ? EmptyStateWidget(
                     title: 'No Purchases Recorded',
-                    message:
-                        'Click "+ Purchase" above to add your first canteen purchase entry.',
+                    message: canManagePurchases
+                        ? 'Click "+ Purchase" above to add your first canteen purchase entry.'
+                        : 'Purchase entries will appear here when available.',
                     icon: Icons.receipt_long_outlined,
                   )
                 : ListView.builder(

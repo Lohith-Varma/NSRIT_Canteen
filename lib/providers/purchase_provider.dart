@@ -21,10 +21,6 @@ class PurchaseProvider extends ChangeNotifier {
     return _purchases.take(5).toList();
   }
 
-  PurchaseProvider() {
-    loadPurchases();
-  }
-
   Future<void> loadPurchases() async {
     _isLoading = true;
     _errorMessage = null;

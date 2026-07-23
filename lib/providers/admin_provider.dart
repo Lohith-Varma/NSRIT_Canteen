@@ -41,12 +41,8 @@ class AdminProvider extends ChangeNotifier {
     return _notifications.where((item) => !item.isRead).length;
   }
 
-  AdminProvider() {
-    loadAdminData();
-    _startUserSync();
-  }
-
-  void _startUserSync() {
+  void startUserSync() {
+    if (_userSubscription != null) return;
     _userSubscription?.cancel();
     _userSubscription = _adminService.watchUsers().listen(
       (users) {
@@ -291,10 +287,18 @@ class AdminProvider extends ChangeNotifier {
   }
 
   bool hasAccess(UserModel? user, String module) {
-    final role = user?.role ?? 'Administrator';
+    final role = user?.role;
+    if (module == 'Dashboard') return true;
+    if (role == null) return false;
     if (role == 'Administrator') return true;
     const permissions = {
-      'Store Manager': {'Inventory', 'Suppliers', 'Purchases', 'Dashboard'},
+      'Store Manager': {
+        'Inventory',
+        'Suppliers',
+        'Purchases',
+        'Stock Movements',
+        'Dashboard',
+      },
       'Cook': {'Menu', 'Preparation', 'Dashboard'},
       'Cashier': {'Sales', 'Dashboard'},
     };

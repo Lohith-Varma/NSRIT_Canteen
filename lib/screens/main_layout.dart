@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/admin_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/inventory_provider.dart';
+import '../providers/kitchen_provider.dart';
+import '../providers/purchase_provider.dart';
+import '../providers/supplier_provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/confirm_dialog.dart';
 
@@ -22,25 +27,72 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
+  bool _loadedInitialData = false;
 
-  final List<Widget> _screens = const [
-    DashboardScreen(),
-    CategoryGridScreen(),
-    MenuScreen(),
-    SalesScreen(),
-    StockMovementScreen(),
-    SupplierListScreen(),
-    PurchaseListScreen(),
-  ];
-
-  final List<String> _titles = const [
-    'Dashboard',
-    'Inventory Management',
-    'Smart Kitchen Menu',
-    'Sales',
-    'Stock Movements',
-    'Supplier Directory',
-    'Purchase History',
+  static const List<_NavigationItem> _allItems = [
+    _NavigationItem(
+      module: 'Dashboard',
+      title: 'Dashboard',
+      label: 'Dashboard',
+      compactLabel: 'Dashboard',
+      icon: Icons.dashboard_outlined,
+      selectedIcon: Icons.dashboard_rounded,
+      screen: DashboardScreen(),
+    ),
+    _NavigationItem(
+      module: 'Inventory',
+      title: 'Inventory Management',
+      label: 'Inventory',
+      compactLabel: 'Inventory',
+      icon: Icons.inventory_2_outlined,
+      selectedIcon: Icons.inventory_2_rounded,
+      screen: CategoryGridScreen(),
+    ),
+    _NavigationItem(
+      module: 'Menu',
+      title: 'Smart Kitchen Menu',
+      label: 'Menu',
+      compactLabel: 'Menu',
+      icon: Icons.restaurant_menu_outlined,
+      selectedIcon: Icons.restaurant_menu_rounded,
+      screen: MenuScreen(),
+    ),
+    _NavigationItem(
+      module: 'Sales',
+      title: 'Sales',
+      label: 'Sales',
+      compactLabel: 'Sales',
+      icon: Icons.point_of_sale_outlined,
+      selectedIcon: Icons.point_of_sale_rounded,
+      screen: SalesScreen(),
+    ),
+    _NavigationItem(
+      module: 'Stock Movements',
+      title: 'Stock Movements',
+      label: 'Movements',
+      compactLabel: 'Moves',
+      icon: Icons.swap_vert_outlined,
+      selectedIcon: Icons.swap_vert_rounded,
+      screen: StockMovementScreen(),
+    ),
+    _NavigationItem(
+      module: 'Suppliers',
+      title: 'Supplier Directory',
+      label: 'Suppliers',
+      compactLabel: 'Suppliers',
+      icon: Icons.people_outline_rounded,
+      selectedIcon: Icons.people_rounded,
+      screen: SupplierListScreen(),
+    ),
+    _NavigationItem(
+      module: 'Purchases',
+      title: 'Purchase History',
+      label: 'Purchases',
+      compactLabel: 'Purchases',
+      icon: Icons.shopping_cart_outlined,
+      selectedIcon: Icons.shopping_cart_rounded,
+      screen: PurchaseListScreen(),
+    ),
   ];
 
   Future<void> _handleLogout(BuildContext context) async {
@@ -70,8 +122,17 @@ class _MainLayoutState extends State<MainLayout> {
     final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
+    final adminProvider = Provider.of<AdminProvider>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth >= 600;
+    final visibleItems = _allItems
+        .where(
+          (item) => adminProvider.hasAccess(authProvider.user, item.module),
+        )
+        .toList();
+    final selectedIndex = _currentIndex >= visibleItems.length
+        ? 0
+        : _currentIndex;
 
     return Scaffold(
       appBar: AppBar(
@@ -89,7 +150,7 @@ class _MainLayoutState extends State<MainLayout> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _titles[_currentIndex],
+              visibleItems[selectedIndex].title,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             Text(
@@ -131,104 +192,113 @@ class _MainLayoutState extends State<MainLayout> {
         children: [
           if (isTablet)
             NavigationRail(
-              selectedIndex: _currentIndex,
+              selectedIndex: selectedIndex,
               onDestinationSelected: (index) {
                 setState(() {
                   _currentIndex = index;
                 });
               },
               labelType: NavigationRailLabelType.all,
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(Icons.dashboard_outlined),
-                  selectedIcon: Icon(Icons.dashboard_rounded),
-                  label: Text('Dashboard'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.inventory_2_outlined),
-                  selectedIcon: Icon(Icons.inventory_2_rounded),
-                  label: Text('Inventory'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.restaurant_menu_outlined),
-                  selectedIcon: Icon(Icons.restaurant_menu_rounded),
-                  label: Text('Menu'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.point_of_sale_outlined),
-                  selectedIcon: Icon(Icons.point_of_sale_rounded),
-                  label: Text('Sales'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.swap_vert_outlined),
-                  selectedIcon: Icon(Icons.swap_vert_rounded),
-                  label: Text('Movements'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.people_outline_rounded),
-                  selectedIcon: Icon(Icons.people_rounded),
-                  label: Text('Suppliers'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.shopping_cart_outlined),
-                  selectedIcon: Icon(Icons.shopping_cart_rounded),
-                  label: Text('Purchases'),
-                ),
-              ],
+              destinations: visibleItems
+                  .map(
+                    (item) => NavigationRailDestination(
+                      icon: Icon(item.icon),
+                      selectedIcon: Icon(item.selectedIcon),
+                      label: Text(item.label),
+                    ),
+                  )
+                  .toList(),
             ),
           if (isTablet) const VerticalDivider(thickness: 1, width: 1),
           Expanded(
-            child: IndexedStack(index: _currentIndex, children: _screens),
+            child: IndexedStack(
+              index: selectedIndex,
+              children: visibleItems.map((item) => item.screen).toList(),
+            ),
           ),
         ],
       ),
       bottomNavigationBar: isTablet
           ? null
           : NavigationBar(
-              selectedIndex: _currentIndex,
+              selectedIndex: selectedIndex,
               onDestinationSelected: (index) {
                 setState(() {
                   _currentIndex = index;
                 });
               },
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.dashboard_outlined),
-                  selectedIcon: Icon(Icons.dashboard_rounded),
-                  label: 'Dashboard',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.inventory_2_outlined),
-                  selectedIcon: Icon(Icons.inventory_2_rounded),
-                  label: 'Inventory',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.restaurant_menu_outlined),
-                  selectedIcon: Icon(Icons.restaurant_menu_rounded),
-                  label: 'Menu',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.point_of_sale_outlined),
-                  selectedIcon: Icon(Icons.point_of_sale_rounded),
-                  label: 'Sales',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.swap_vert_outlined),
-                  selectedIcon: Icon(Icons.swap_vert_rounded),
-                  label: 'Moves',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.people_outline_rounded),
-                  selectedIcon: Icon(Icons.people_rounded),
-                  label: 'Suppliers',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.shopping_cart_outlined),
-                  selectedIcon: Icon(Icons.shopping_cart_rounded),
-                  label: 'Purchases',
-                ),
-              ],
+              destinations: visibleItems
+                  .map(
+                    (item) => NavigationDestination(
+                      icon: Icon(item.icon),
+                      selectedIcon: Icon(item.selectedIcon),
+                      label: item.compactLabel,
+                    ),
+                  )
+                  .toList(),
             ),
     );
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_loadedInitialData) return;
+    _loadedInitialData = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadAuthorizedData();
+      }
+    });
+  }
+
+  Future<void> _loadAuthorizedData() async {
+    final authProvider = context.read<AuthProvider>();
+    final adminProvider = context.read<AdminProvider>();
+    final inventoryProvider = context.read<InventoryProvider>();
+    final supplierProvider = context.read<SupplierProvider>();
+    final purchaseProvider = context.read<PurchaseProvider>();
+    final kitchenProvider = context.read<KitchenProvider>();
+    final user = authProvider.user;
+
+    if (adminProvider.hasAccess(user, 'Inventory') ||
+        adminProvider.hasAccess(user, 'Menu')) {
+      inventoryProvider.startRealtimeSync();
+    }
+    if (adminProvider.hasAccess(user, 'Suppliers')) {
+      await supplierProvider.loadSuppliers();
+    }
+    if (adminProvider.hasAccess(user, 'Purchases')) {
+      await purchaseProvider.loadPurchases();
+    }
+    if (adminProvider.hasAccess(user, 'Menu') ||
+        adminProvider.hasAccess(user, 'Sales') ||
+        adminProvider.hasAccess(user, 'Stock Movements')) {
+      await kitchenProvider.loadKitchenData();
+    }
+    if (user?.role == 'Administrator') {
+      adminProvider.startUserSync();
+      await adminProvider.loadAdminData();
+    }
+  }
+}
+
+class _NavigationItem {
+  final String module;
+  final String title;
+  final String label;
+  final String compactLabel;
+  final IconData icon;
+  final IconData selectedIcon;
+  final Widget screen;
+
+  const _NavigationItem({
+    required this.module,
+    required this.title,
+    required this.label,
+    required this.compactLabel,
+    required this.icon,
+    required this.selectedIcon,
+    required this.screen,
+  });
 }

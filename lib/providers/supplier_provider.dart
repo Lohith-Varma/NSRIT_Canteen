@@ -17,10 +17,6 @@ class SupplierProvider extends ChangeNotifier {
 
   int get totalSuppliers => _suppliers.length;
 
-  SupplierProvider() {
-    loadSuppliers();
-  }
-
   Future<void> loadSuppliers() async {
     _isLoading = true;
     _errorMessage = null;

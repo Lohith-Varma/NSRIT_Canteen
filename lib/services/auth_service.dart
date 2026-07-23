@@ -109,15 +109,12 @@ class AuthService {
       return UserModel.fromMap(doc.data()!, doc.id);
     }
 
-    final model = UserModel(
-      uid: user.uid,
-      email: user.email ?? '',
-      displayName: user.displayName,
-      role: 'Administrator',
-      createdAt: DateTime.now(),
+    await _auth.signOut();
+    throw FirebaseAuthException(
+      code: 'profile-not-found',
+      message:
+          'No application profile exists for this account. Contact an administrator.',
     );
-    await ref.set(model.toMap(), SetOptions(merge: true));
-    return model;
   }
 
   String _authMessage(FirebaseAuthException e) {
@@ -136,6 +133,8 @@ class AuthService {
         return 'Use a stronger password.';
       case 'network-request-failed':
         return 'Network error. Check your connection and try again.';
+      case 'profile-not-found':
+        return e.message ?? 'No application profile exists for this account.';
       default:
         return e.message ?? 'Authentication failed.';
     }

@@ -44,10 +44,6 @@ class KitchenProvider extends ChangeNotifier {
 
   List<SaleModel> get recentSales => _sales.take(5).toList();
 
-  KitchenProvider() {
-    loadKitchenData();
-  }
-
   Future<void> loadKitchenData() async {
     _isLoading = true;
     _errorMessage = null;
