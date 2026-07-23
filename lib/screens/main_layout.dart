@@ -8,6 +8,9 @@ import 'dashboard/dashboard_screen.dart';
 import 'inventory/category_grid_screen.dart';
 import 'suppliers/supplier_list_screen.dart';
 import 'purchases/purchase_list_screen.dart';
+import 'menu/menu_screen.dart';
+import 'sales/sales_screen.dart';
+import 'stock_movements/stock_movement_screen.dart';
 import 'auth/login_screen.dart';
 
 class MainLayout extends StatefulWidget {
@@ -23,6 +26,9 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _screens = const [
     DashboardScreen(),
     CategoryGridScreen(),
+    MenuScreen(),
+    SalesScreen(),
+    StockMovementScreen(),
     SupplierListScreen(),
     PurchaseListScreen(),
   ];
@@ -30,6 +36,9 @@ class _MainLayoutState extends State<MainLayout> {
   final List<String> _titles = const [
     'Dashboard',
     'Inventory Management',
+    'Smart Kitchen Menu',
+    'Sales',
+    'Stock Movements',
     'Supplier Directory',
     'Purchase History',
   ];
@@ -130,6 +139,21 @@ class _MainLayoutState extends State<MainLayout> {
                   label: Text('Inventory'),
                 ),
                 NavigationRailDestination(
+                  icon: Icon(Icons.restaurant_menu_outlined),
+                  selectedIcon: Icon(Icons.restaurant_menu_rounded),
+                  label: Text('Menu'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.point_of_sale_outlined),
+                  selectedIcon: Icon(Icons.point_of_sale_rounded),
+                  label: Text('Sales'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.swap_vert_outlined),
+                  selectedIcon: Icon(Icons.swap_vert_rounded),
+                  label: Text('Movements'),
+                ),
+                NavigationRailDestination(
                   icon: Icon(Icons.people_outline_rounded),
                   selectedIcon: Icon(Icons.people_rounded),
                   label: Text('Suppliers'),
@@ -169,6 +193,21 @@ class _MainLayoutState extends State<MainLayout> {
                   icon: Icon(Icons.inventory_2_outlined),
                   selectedIcon: Icon(Icons.inventory_2_rounded),
                   label: 'Inventory',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.restaurant_menu_outlined),
+                  selectedIcon: Icon(Icons.restaurant_menu_rounded),
+                  label: 'Menu',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.point_of_sale_outlined),
+                  selectedIcon: Icon(Icons.point_of_sale_rounded),
+                  label: 'Sales',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.swap_vert_outlined),
+                  selectedIcon: Icon(Icons.swap_vert_rounded),
+                  label: 'Moves',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.people_outline_rounded),

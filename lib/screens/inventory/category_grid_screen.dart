@@ -5,10 +5,46 @@ import '../../constants/app_colors.dart';
 import '../../providers/inventory_provider.dart';
 import '../../widgets/custom_text_field.dart';
 import 'item_list_screen.dart';
-import 'add_edit_item_dialog.dart';
 
 class CategoryGridScreen extends StatelessWidget {
   const CategoryGridScreen({super.key});
+
+  Future<void> _showCategoryDialog(BuildContext context) async {
+    final controller = TextEditingController();
+    final provider = Provider.of<InventoryProvider>(context, listen: false);
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add Category'),
+          content: CustomTextField(
+            label: 'Category Name',
+            hint: 'e.g. Bakery',
+            controller: controller,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton.icon(
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Add'),
+              onPressed: () async {
+                final category = controller.text.trim();
+                if (category.isEmpty) return;
+                await provider.addCategory(category);
+                if (context.mounted) Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    controller.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +125,9 @@ class CategoryGridScreen extends StatelessWidget {
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.2,
                 ),
-                itemCount: AppConstants.categories.length,
+                itemCount: inventoryProvider.categories.length,
                 itemBuilder: (context, index) {
-                  final category = AppConstants.categories[index];
+                  final category = inventoryProvider.categories[index];
                   final itemCount = counts[category] ?? 0;
                   final categoryColor = AppColors.getCategoryColor(category);
                   final icon = AppConstants.getCategoryIcon(category);
@@ -127,19 +163,31 @@ class CategoryGridScreen extends StatelessWidget {
                                     size: 24,
                                   ),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceContainerHighest,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                    '$itemCount items',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.surfaceContainerHighest,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        '$itemCount items',
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    if (!AppConstants.categories.contains(category) && itemCount == 0)
+                                      IconButton(
+                                        tooltip: 'Delete category',
+                                        visualDensity: VisualDensity.compact,
+                                        icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                                        onPressed: () => inventoryProvider.deleteCategory(category),
+                                      ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -178,10 +226,10 @@ class CategoryGridScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          AddEditItemDialog.show(context);
+          _showCategoryDialog(context);
         },
         icon: const Icon(Icons.add),
-        label: const Text('New Item'),
+        label: const Text('New Category'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),

@@ -42,7 +42,7 @@ class _ItemListScreenState extends State<ItemListScreen> {
     final confirmed = await ConfirmDialog.show(
       context,
       title: 'Delete Item',
-      content: 'Are you sure you want to delete "${item.name}"? This action cannot be undone and will delete associated lot records.',
+      content: 'Are you sure you want to delete "${item.name}"? The item will be hidden from active inventory and retained for audit history.',
       confirmText: 'Delete Item',
       isDanger: true,
     );
@@ -115,10 +115,54 @@ class _ItemListScreenState extends State<ItemListScreen> {
                 ),
               ),
             ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  _FilterChip(
+                    label: 'All',
+                    selected: inventoryProvider.selectedStatus == null,
+                    onSelected: () => inventoryProvider.setSelectedStatus(null),
+                  ),
+                  _FilterChip(
+                    label: 'Low Stock',
+                    selected: inventoryProvider.selectedStatus == 'low_stock',
+                    onSelected: () => inventoryProvider.setSelectedStatus('low_stock'),
+                  ),
+                  _FilterChip(
+                    label: 'Out of Stock',
+                    selected: inventoryProvider.selectedStatus == 'out_of_stock',
+                    onSelected: () => inventoryProvider.setSelectedStatus('out_of_stock'),
+                  ),
+                  const SizedBox(width: 8),
+                  DropdownButton<InventorySortOption>(
+                    value: inventoryProvider.sortOption,
+                    underline: const SizedBox.shrink(),
+                    items: const [
+                      DropdownMenuItem(value: InventorySortOption.nameAsc, child: Text('Name A-Z')),
+                      DropdownMenuItem(value: InventorySortOption.nameDesc, child: Text('Name Z-A')),
+                      DropdownMenuItem(value: InventorySortOption.quantityLow, child: Text('Stock Low-High')),
+                      DropdownMenuItem(value: InventorySortOption.quantityHigh, child: Text('Stock High-Low')),
+                      DropdownMenuItem(value: InventorySortOption.updatedNewest, child: Text('Recently Updated')),
+                      DropdownMenuItem(value: InventorySortOption.expirySoon, child: Text('Expiry Soon')),
+                    ],
+                    onChanged: (option) {
+                      if (option != null) {
+                        inventoryProvider.setSortOption(option);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
 
             // Item List Content
             Expanded(
-              child: items.isEmpty
+              child: inventoryProvider.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : items.isEmpty
                   ? EmptyStateWidget(
                       title: 'No Inventory Items Found',
                       message: widget.category != null
@@ -246,10 +290,13 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                                 style: TextStyle(
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.bold,
-                                                  color: item.isLowStock ? AppColors.danger : AppColors.primary,
+                                                  color: item.isOutOfStock || item.isLowStock ? AppColors.danger : AppColors.primary,
                                                 ),
                                               ),
-                                              if (item.isLowStock) ...[
+                                              if (item.isOutOfStock) ...[
+                                                const SizedBox(width: 8),
+                                                const _StatusBadge(label: 'Out', color: AppColors.danger),
+                                              ] else if (item.isLowStock) ...[
                                                 const SizedBox(width: 8),
                                                 const LowStockBadge(isCompact: true),
                                               ],
@@ -261,7 +308,7 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
                                           Text(
-                                            'Avg Purchase Cost',
+                                            'Selling Price',
                                             style: TextStyle(
                                               fontSize: 11,
                                               color: theme.textTheme.bodySmall?.color,
@@ -269,7 +316,7 @@ class _ItemListScreenState extends State<ItemListScreen> {
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
-                                            Formatters.currency(item.averageCost),
+                                            Formatters.currency(item.sellingPrice),
                                             style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
@@ -289,6 +336,55 @@ class _ItemListScreenState extends State<ItemListScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onSelected;
+
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: ChoiceChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => onSelected(),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _StatusBadge({
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.bold),
       ),
     );
   }

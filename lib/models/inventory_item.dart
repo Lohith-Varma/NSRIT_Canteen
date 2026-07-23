@@ -2,62 +2,124 @@ import 'inventory_lot.dart';
 
 class InventoryItem {
   final String id;
-  final String name;
+  final String itemName;
   final String category;
+  final double quantity;
   final String unit;
-  final double minStock;
+  final double minimumStock;
+  final double maximumStock;
+  final String supplier;
+  final double purchasePrice;
+  final double sellingPrice;
+  final String storageLocation;
+  final DateTime? expiryDate;
+  final String notes;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String createdBy;
+  final String status;
+  final bool isDeleted;
   final List<InventoryLot> lots;
 
   InventoryItem({
     required this.id,
-    required this.name,
+    String? itemName,
+    String? name,
     required this.category,
+    double? quantity,
     required this.unit,
-    required this.minStock,
+    double? minimumStock,
+    double? minStock,
+    this.maximumStock = 0,
+    this.supplier = '',
+    this.purchasePrice = 0,
+    this.sellingPrice = 0,
+    this.storageLocation = '',
+    this.expiryDate,
+    this.notes = '',
     required this.createdAt,
     required this.updatedAt,
+    this.createdBy = '',
+    this.status = 'active',
+    this.isDeleted = false,
     this.lots = const [],
-  });
+  })  : itemName = itemName ?? name ?? '',
+        quantity = quantity ?? 0,
+        minimumStock = minimumStock ?? minStock ?? 0;
 
-  // Calculate Total Quantity from all separate lots
+  String get name => itemName;
+
+  double get minStock => minimumStock;
+
   double get totalStock {
-    if (lots.isEmpty) return 0.0;
+    if (lots.isEmpty) return quantity;
     return lots.fold(0.0, (sum, lot) => sum + lot.quantity);
   }
 
-  // Weighted Average Purchase Cost: Sum(Lot Qty * Lot Price) / Total Qty
   double get averageCost {
+    if (purchasePrice > 0 && lots.isEmpty) return purchasePrice;
     if (lots.isEmpty || totalStock == 0) return 0.0;
     final totalCost = lots.fold(0.0, (sum, lot) => sum + (lot.quantity * lot.unitPrice));
     return totalCost / totalStock;
   }
 
-  // Current Inventory Value
   double get totalValue => totalStock * averageCost;
 
-  // Low Stock Status
-  bool get isLowStock => totalStock < minStock;
+  bool get isLowStock => totalStock > 0 && totalStock <= minimumStock;
+
+  bool get isOutOfStock => totalStock <= 0;
+
+  bool get isExpired {
+    if (expiryDate == null) return false;
+    final today = DateTime.now();
+    final expiry = DateTime(expiryDate!.year, expiryDate!.month, expiryDate!.day);
+    final current = DateTime(today.year, today.month, today.day);
+    return expiry.isBefore(current);
+  }
 
   InventoryItem copyWith({
     String? id,
+    String? itemName,
     String? name,
     String? category,
+    double? quantity,
     String? unit,
+    double? minimumStock,
     double? minStock,
+    double? maximumStock,
+    String? supplier,
+    double? purchasePrice,
+    double? sellingPrice,
+    String? storageLocation,
+    DateTime? expiryDate,
+    bool clearExpiryDate = false,
+    String? notes,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? createdBy,
+    String? status,
+    bool? isDeleted,
     List<InventoryLot>? lots,
   }) {
     return InventoryItem(
       id: id ?? this.id,
-      name: name ?? this.name,
+      itemName: itemName ?? name ?? this.itemName,
       category: category ?? this.category,
+      quantity: quantity ?? this.quantity,
       unit: unit ?? this.unit,
-      minStock: minStock ?? this.minStock,
+      minimumStock: minimumStock ?? minStock ?? this.minimumStock,
+      maximumStock: maximumStock ?? this.maximumStock,
+      supplier: supplier ?? this.supplier,
+      purchasePrice: purchasePrice ?? this.purchasePrice,
+      sellingPrice: sellingPrice ?? this.sellingPrice,
+      storageLocation: storageLocation ?? this.storageLocation,
+      expiryDate: clearExpiryDate ? null : expiryDate ?? this.expiryDate,
+      notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      createdBy: createdBy ?? this.createdBy,
+      status: status ?? this.status,
+      isDeleted: isDeleted ?? this.isDeleted,
       lots: lots ?? this.lots,
     );
   }
@@ -65,28 +127,70 @@ class InventoryItem {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': name,
+      'itemName': itemName,
+      'name': itemName,
       'category': category,
+      'quantity': quantity,
       'unit': unit,
-      'minStock': minStock,
+      'minimumStock': minimumStock,
+      'minStock': minimumStock,
+      'maximumStock': maximumStock,
+      'supplier': supplier,
+      'purchasePrice': purchasePrice,
+      'sellingPrice': sellingPrice,
+      'storageLocation': storageLocation,
+      'expiryDate': expiryDate?.toIso8601String(),
+      'notes': notes,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'createdBy': createdBy,
+      'status': status,
+      'isDeleted': isDeleted,
     };
   }
 
   factory InventoryItem.fromMap(Map<String, dynamic> map, String docId, {List<InventoryLot> lots = const []}) {
+    DateTime parseDate(dynamic value) {
+      if (value == null) return DateTime.now();
+      if (value is DateTime) return value;
+      final seconds = value.seconds;
+      if (seconds is int) {
+        return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+      }
+      return DateTime.tryParse(value.toString()) ?? DateTime.now();
+    }
+
+    DateTime? parseNullableDate(dynamic value) {
+      if (value == null || value == '') return null;
+      if (value is DateTime) return value;
+      final seconds = value.seconds;
+      if (seconds is int) {
+        return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+      }
+      return DateTime.tryParse(value.toString());
+    }
+
     return InventoryItem(
       id: docId,
-      name: map['name'] ?? '',
+      itemName: map['itemName'] ?? map['name'] ?? '',
       category: map['category'] ?? 'General',
+      quantity: (map['quantity'] as num?)?.toDouble() ?? 0.0,
       unit: map['unit'] ?? 'kg',
-      minStock: (map['minStock'] as num?)?.toDouble() ?? 0.0,
-      createdAt: map['createdAt'] != null
-          ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
-          : DateTime.now(),
-      updatedAt: map['updatedAt'] != null
-          ? DateTime.tryParse(map['updatedAt']) ?? DateTime.now()
-          : DateTime.now(),
+      minimumStock: (map['minimumStock'] as num?)?.toDouble() ??
+          (map['minStock'] as num?)?.toDouble() ??
+          0.0,
+      maximumStock: (map['maximumStock'] as num?)?.toDouble() ?? 0.0,
+      supplier: map['supplier'] ?? '',
+      purchasePrice: (map['purchasePrice'] as num?)?.toDouble() ?? 0.0,
+      sellingPrice: (map['sellingPrice'] as num?)?.toDouble() ?? 0.0,
+      storageLocation: map['storageLocation'] ?? '',
+      expiryDate: parseNullableDate(map['expiryDate']),
+      notes: map['notes'] ?? '',
+      createdAt: parseDate(map['createdAt']),
+      updatedAt: parseDate(map['updatedAt']),
+      createdBy: map['createdBy'] ?? '',
+      status: map['status'] ?? 'active',
+      isDeleted: map['isDeleted'] ?? false,
       lots: lots,
     );
   }

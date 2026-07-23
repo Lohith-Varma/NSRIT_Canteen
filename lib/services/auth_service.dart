@@ -1,125 +1,143 @@
-import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+
+import '../constants/app_constants.dart';
 import '../models/user_model.dart';
-import 'firebase_service.dart';
 
 class AuthService {
-  FirebaseAuth? get _auth {
-    if (FirebaseService.isInitialized) {
-      try {
-        return FirebaseAuth.instance;
-      } catch (_) {
-        return null;
-      }
-    }
-    return null;
-  }
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // Stream for auth changes
   Stream<UserModel?> get authStateChanges {
-    final auth = _auth;
-    if (auth == null) {
-      return Stream.value(_demoUser);
-    }
-    return auth.authStateChanges().map((user) {
+    return _auth.authStateChanges().asyncMap((user) async {
       if (user == null) return null;
-      return UserModel(
-        uid: user.uid,
-        email: user.email ?? 'user@canteen.edu',
-        displayName: user.displayName ?? 'Canteen Manager',
-        createdAt: DateTime.now(),
-      );
+      return _userFromFirebaseUser(user);
     });
   }
 
-  // Demo user fallback when testing offline or demo mode
-  UserModel? _demoUser = UserModel(
-    uid: 'demo_user_123',
-    email: 'admin@nsrit.edu.in',
-    displayName: 'NSRIT Canteen Admin',
-    createdAt: DateTime.now(),
-  );
-
-  UserModel? get currentUser {
-    final auth = _auth;
-    if (auth == null) {
-      return _demoUser;
-    }
-    final user = auth.currentUser;
-    if (user == null) return _demoUser;
-    return UserModel(
-      uid: user.uid,
-      email: user.email ?? 'admin@nsrit.edu.in',
-      displayName: user.displayName ?? 'Canteen Manager',
-      createdAt: DateTime.now(),
-    );
+  Future<UserModel?> get currentUser async {
+    final user = _auth.currentUser;
+    if (user == null) return null;
+    return _userFromFirebaseUser(user);
   }
 
   Future<UserModel> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
-    final auth = _auth;
-    if (auth != null) {
-      try {
-        final credential = await auth.signInWithEmailAndPassword(
-          email: email.trim(),
-          password: password,
-        );
-        final user = credential.user;
-        if (user != null) {
-          return UserModel(
-            uid: user.uid,
-            email: user.email ?? email,
-            displayName: user.displayName ?? 'Canteen Manager',
-            createdAt: DateTime.now(),
-          );
-        }
-      } catch (e) {
-        // Fall back to demo user if Firebase Auth isn't active in console
-        debugPrint('FirebaseAuth sign in note: $e. Falling back to local auth.');
-      }
-    }
-    
-    // Demo login verification
-    if (email.trim().isNotEmpty && password.length >= 6) {
-      _demoUser = UserModel(
-        uid: 'user_${email.hashCode}',
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
-        displayName: email.split('@').first.replaceAll('.', ' ').toUpperCase(),
+        password: password,
+      );
+      final user = credential.user;
+      if (user == null) {
+        throw FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'Unable to load the signed-in user.',
+        );
+      }
+      final profile = await _userFromFirebaseUser(user);
+      if (!profile.isActive) {
+        await _auth.signOut();
+        throw FirebaseAuthException(
+          code: 'user-disabled',
+          message: 'This account has been deactivated.',
+        );
+      }
+      return profile;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_authMessage(e));
+    }
+  }
+
+  Future<UserModel> signUpWithEmailAndPassword({
+    required String email,
+    required String password,
+    required String displayName,
+    String role = 'Cashier',
+  }) async {
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      final user = credential.user;
+      if (user == null) {
+        throw FirebaseAuthException(
+          code: 'operation-not-allowed',
+          message: 'Unable to create this account.',
+        );
+      }
+      final trimmedName = displayName.trim();
+      if (trimmedName.isNotEmpty) {
+        await user.updateDisplayName(trimmedName);
+      }
+      final model = UserModel(
+        uid: user.uid,
+        email: user.email ?? email.trim(),
+        displayName: trimmedName.isEmpty ? null : trimmedName,
+        role: role,
         createdAt: DateTime.now(),
       );
-      return _demoUser!;
+      await _db
+          .collection(AppConstants.usersCollection)
+          .doc(user.uid)
+          .set(model.toMap(), SetOptions(merge: true));
+      return model;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_authMessage(e));
     }
-    throw FirebaseAuthException(
-      code: 'invalid-credential',
-      message: 'Invalid email or password.',
-    );
   }
 
   Future<void> sendPasswordResetEmail({required String email}) async {
-    final auth = _auth;
-    if (auth != null) {
-      try {
-        await auth.sendPasswordResetEmail(email: email.trim());
-        return;
-      } catch (e) {
-        debugPrint('Password reset notice: $e');
-      }
+    try {
+      await _auth.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_authMessage(e));
     }
-    // Simulation succeeded
   }
 
   Future<void> signOut() async {
-    final auth = _auth;
-    if (auth != null) {
-      try {
-        await auth.signOut();
-      } catch (e) {
-        debugPrint('Sign out error: $e');
-      }
+    await _auth.signOut();
+  }
+
+  Future<UserModel> _userFromFirebaseUser(User user) async {
+    final ref = _db.collection(AppConstants.usersCollection).doc(user.uid);
+    final doc = await ref.get();
+    if (doc.exists && doc.data() != null) {
+      return UserModel.fromMap(doc.data()!, doc.id);
     }
-    _demoUser = null;
+
+    final model = UserModel(
+      uid: user.uid,
+      email: user.email ?? '',
+      displayName: user.displayName,
+      role: 'Administrator',
+      createdAt: DateTime.now(),
+    );
+    await ref.set(model.toMap(), SetOptions(merge: true));
+    return model;
+  }
+
+  String _authMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        return 'Enter a valid email address.';
+      case 'user-disabled':
+        return e.message ?? 'This account has been disabled.';
+      case 'user-not-found':
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'Invalid email or password.';
+      case 'email-already-in-use':
+        return 'An account already exists for this email.';
+      case 'weak-password':
+        return 'Use a stronger password.';
+      case 'network-request-failed':
+        return 'Network error. Check your connection and try again.';
+      default:
+        return e.message ?? 'Authentication failed.';
+    }
   }
 }

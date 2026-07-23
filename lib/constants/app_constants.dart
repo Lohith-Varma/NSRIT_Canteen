@@ -48,8 +48,17 @@ class AppConstants {
 
   // Firestore Collection Names
   static const String usersCollection = 'users';
+  static const String inventoryCollection = 'inventory';
+  static const String categoriesCollection = 'categories';
   static const String itemsCollection = 'inventory_items';
   static const String lotsCollection = 'inventory_lots';
   static const String suppliersCollection = 'suppliers';
   static const String purchasesCollection = 'purchases';
+  static const String menuItemsCollection = 'menu_items';
+  static const String recipesCollection = 'recipes';
+  static const String preparedFoodCollection = 'prepared_food';
+  static const String salesCollection = 'sales';
+  static const String stockMovementsCollection = 'stock_movements';
+  static const String settingsCollection = 'settings';
+  static const String notificationsCollection = 'notifications';
 }

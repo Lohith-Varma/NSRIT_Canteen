@@ -7,6 +7,8 @@ import 'providers/theme_provider.dart';
 import 'providers/inventory_provider.dart';
 import 'providers/supplier_provider.dart';
 import 'providers/purchase_provider.dart';
+import 'providers/kitchen_provider.dart';
+import 'providers/admin_provider.dart';
 import 'screens/auth/splash_screen.dart';
 
 void main() async {
@@ -21,6 +23,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => InventoryProvider()),
         ChangeNotifierProvider(create: (_) => SupplierProvider()),
         ChangeNotifierProvider(create: (_) => PurchaseProvider()),
+        ChangeNotifierProvider(create: (_) => KitchenProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
       ],
       child: const CollegeCanteenApp(),
     ),

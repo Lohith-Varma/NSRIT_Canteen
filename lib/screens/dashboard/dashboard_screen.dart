@@ -4,11 +4,13 @@ import '../../constants/app_colors.dart';
 import '../../providers/inventory_provider.dart';
 import '../../providers/supplier_provider.dart';
 import '../../providers/purchase_provider.dart';
+import '../../providers/kitchen_provider.dart';
 import '../../utils/formatters.dart';
 import '../../widgets/stat_card.dart';
 import '../../widgets/low_stock_badge.dart';
 import '../../widgets/empty_state.dart';
 import '../purchases/add_purchase_screen.dart';
+import '../inventory/add_inventory_screen.dart';
 import '../inventory/item_detail_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -21,6 +23,7 @@ class DashboardScreen extends StatelessWidget {
     final inventoryProvider = Provider.of<InventoryProvider>(context);
     final supplierProvider = Provider.of<SupplierProvider>(context);
     final purchaseProvider = Provider.of<PurchaseProvider>(context);
+    final kitchenProvider = Provider.of<KitchenProvider>(context);
 
     final screenWidth = MediaQuery.of(context).size.width;
     final gridCrossAxisCount = screenWidth > 900 ? 3 : (screenWidth > 600 ? 2 : 2);
@@ -33,6 +36,7 @@ class DashboardScreen extends StatelessWidget {
         await inventoryProvider.loadInventory();
         await supplierProvider.loadSuppliers();
         await purchaseProvider.loadPurchases();
+        await kitchenProvider.loadKitchenData();
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -70,20 +74,41 @@ class DashboardScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const AddPurchaseScreen(),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.secondary,
+                            foregroundColor: Colors.white,
                           ),
-                        );
-                      },
-                      icon: const Icon(Icons.add_shopping_cart, size: 18),
-                      label: const Text('+ Purchase'),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const AddPurchaseScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.add_shopping_cart, size: 18),
+                          label: const Text('+ Purchase'),
+                        ),
+                        OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: BorderSide(color: Colors.white.withValues(alpha: 0.7)),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const AddInventoryScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.add_rounded, size: 18),
+                          label: const Text('Item'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -144,6 +169,41 @@ class DashboardScreen extends StatelessWidget {
                   icon: Icons.warning_amber_rounded,
                   color: AppColors.danger,
                   subtitle: inventoryProvider.lowStockCount > 0 ? 'Requires Restock' : 'Stock Healthy',
+                ),
+                StatCard(
+                  title: 'Out of Stock',
+                  value: Formatters.number(inventoryProvider.outOfStockCount.toDouble()),
+                  icon: Icons.remove_shopping_cart_rounded,
+                  color: AppColors.warning,
+                  subtitle: inventoryProvider.outOfStockCount > 0 ? 'Immediate Action' : 'None',
+                ),
+                StatCard(
+                  title: 'Healthy Stock',
+                  value: Formatters.number(inventoryProvider.healthyStockCount.toDouble()),
+                  icon: Icons.check_circle_rounded,
+                  color: AppColors.success,
+                  subtitle: 'Above minimum',
+                ),
+                StatCard(
+                  title: 'Menu Items',
+                  value: Formatters.number(kitchenProvider.totalMenuItems.toDouble()),
+                  icon: Icons.restaurant_menu_rounded,
+                  color: AppColors.info,
+                  subtitle: 'Smart kitchen',
+                ),
+                StatCard(
+                  title: 'Prepared Food',
+                  value: Formatters.number(kitchenProvider.preparedFoodAvailable),
+                  icon: Icons.soup_kitchen_rounded,
+                  color: AppColors.secondary,
+                  subtitle: 'Available units',
+                ),
+                StatCard(
+                  title: 'Sales Revenue',
+                  value: Formatters.currency(kitchenProvider.totalSalesAmount),
+                  icon: Icons.point_of_sale_rounded,
+                  color: AppColors.success,
+                  subtitle: 'Recorded sales',
                 ),
               ],
             ),

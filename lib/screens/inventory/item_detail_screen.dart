@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_constants.dart';
 import '../../models/inventory_item.dart';
+import '../../providers/inventory_provider.dart';
 import '../../utils/formatters.dart';
+import '../../widgets/confirm_dialog.dart';
 import '../../widgets/low_stock_badge.dart';
+import 'edit_inventory_screen.dart';
 import '../purchases/add_purchase_screen.dart';
 
 class ItemDetailScreen extends StatelessWidget {
@@ -20,6 +24,17 @@ class ItemDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(item.name),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_rounded),
+            tooltip: 'Edit Inventory Item',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => EditInventoryScreen(item: item),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.add_shopping_cart_rounded),
             tooltip: 'Add Purchase for this Item',
@@ -94,10 +109,17 @@ class ItemDetailScreen extends StatelessWidget {
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                             ],
-                          ),
-                          if (item.isLowStock) ...[
-                            const SizedBox(height: 8),
-                            const LowStockBadge(),
+                              ),
+                              if (item.isOutOfStock) ...[
+                                const SizedBox(height: 8),
+                                const _DetailStatusBadge(
+                                  label: 'Out of Stock',
+                                  color: AppColors.danger,
+                                  icon: Icons.remove_shopping_cart_rounded,
+                                ),
+                              ] else if (item.isLowStock) ...[
+                                const SizedBox(height: 8),
+                                const LowStockBadge(),
                           ],
                         ],
                       ),
@@ -127,32 +149,55 @@ class ItemDetailScreen extends StatelessWidget {
                 _buildMetricCard(
                   title: 'Total Stock',
                   value: Formatters.quantityWithUnit(item.totalStock, item.unit),
-                  subtitle: 'Min Required: ${item.minStock} ${item.unit}',
+                  subtitle: 'Min: ${item.minimumStock} ${item.unit} / Max: ${item.maximumStock} ${item.unit}',
                   icon: Icons.inventory_rounded,
-                  color: item.isLowStock ? AppColors.danger : AppColors.primary,
+                  color: item.isOutOfStock || item.isLowStock ? AppColors.danger : AppColors.primary,
                 ),
                 _buildMetricCard(
-                  title: 'Avg Purchase Cost',
-                  value: Formatters.currency(item.averageCost),
-                  subtitle: 'Weighted per ${item.unit}',
-                  icon: Icons.calculate_rounded,
+                  title: 'Purchase Price',
+                  value: Formatters.currency(item.purchasePrice),
+                  subtitle: 'Per ${item.unit}',
+                  icon: Icons.price_check_rounded,
                   color: AppColors.info,
                 ),
                 _buildMetricCard(
-                  title: 'Current Inventory Value',
-                  value: Formatters.currency(item.totalValue),
-                  subtitle: 'Total Lot Valuation',
-                  icon: Icons.account_balance_wallet_rounded,
+                  title: 'Selling Price',
+                  value: Formatters.currency(item.sellingPrice),
+                  subtitle: 'Per ${item.unit}',
+                  icon: Icons.sell_rounded,
                   color: AppColors.success,
                 ),
                 _buildMetricCard(
-                  title: 'Active Purchase Lots',
-                  value: '${item.lots.length} Lots',
-                  subtitle: 'Stored separately',
-                  icon: Icons.layers_rounded,
+                  title: 'Stock Value',
+                  value: Formatters.currency(item.totalValue),
+                  subtitle: item.lots.isEmpty ? 'Quantity x purchase price' : '${item.lots.length} lots',
+                  icon: Icons.account_balance_wallet_rounded,
                   color: AppColors.secondary,
                 ),
               ],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Inventory Information',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    _InfoRow(label: 'Supplier', value: item.supplier.isEmpty ? 'Not specified' : item.supplier),
+                    _InfoRow(label: 'Storage Location', value: item.storageLocation.isEmpty ? 'Not specified' : item.storageLocation),
+                    _InfoRow(label: 'Expiry Date', value: item.expiryDate == null ? 'Not set' : Formatters.formatDate(item.expiryDate!)),
+                    _InfoRow(label: 'Status', value: item.isOutOfStock ? 'Out of stock' : item.isLowStock ? 'Low stock' : 'Healthy'),
+                    _InfoRow(label: 'Updated', value: Formatters.formatDateTime(item.updatedAt)),
+                    if (item.notes.isNotEmpty) _InfoRow(label: 'Notes', value: item.notes),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -271,6 +316,42 @@ class ItemDetailScreen extends StatelessWidget {
                       );
                     },
                   ),
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.danger,
+                side: const BorderSide(color: AppColors.danger),
+              ),
+              icon: const Icon(Icons.delete_outline_rounded),
+              label: const Text('Delete Inventory Item'),
+              onPressed: () async {
+                final confirmed = await ConfirmDialog.show(
+                  context,
+                  title: 'Delete Item',
+                  content: 'This will soft delete "${item.name}" from active inventory.',
+                  confirmText: 'Delete',
+                  isDanger: true,
+                );
+                if (confirmed == true && context.mounted) {
+                  final provider = context.read<InventoryProvider>();
+                  final success = await provider.deleteItem(item.id);
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? '${item.name} deleted successfully.'
+                            : provider.errorMessage ?? 'Failed to delete item.',
+                      ),
+                      backgroundColor: success ? AppColors.success : AppColors.danger,
+                    ),
+                  );
+                  if (success) {
+                    Navigator.of(context).pop();
+                  }
+                }
+              },
+            ),
           ],
         ),
       ),
@@ -318,6 +399,78 @@ class ItemDetailScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _InfoRow({
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 130,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodySmall?.color,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailStatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+  final IconData icon;
+
+  const _DetailStatusBadge({
+    required this.label,
+    required this.color,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+        ],
       ),
     );
   }

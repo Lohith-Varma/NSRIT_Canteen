@@ -32,22 +32,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKeyForNSRITCanteenApp123',
-    appId: '1:1234567890:web:abcdef1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'nsrit-canteen-app',
-    authDomain: 'nsrit-canteen-app.firebaseapp.com',
-    storageBucket: 'nsrit-canteen-app.appspot.com',
+    apiKey: 'AIzaSyB96rmQtWbRyLqQqYgtHF8zFNc03-2wPSw',
+    appId: '1:715141404075:web:15122945149761fd356eee',
+    messagingSenderId: '715141404075',
+    projectId: 'nsrit-canteen',
+    authDomain: 'nsrit-canteen.firebaseapp.com',
+    storageBucket: 'nsrit-canteen.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDemoKeyForNSRITCanteenApp123',
-    appId: '1:1234567890:android:abcdef1234567890',
-    messagingSenderId: '1234567890',
-    projectId: 'nsrit-canteen-app',
-    storageBucket: 'nsrit-canteen-app.appspot.com',
+    apiKey: 'AIzaSyAciuUcSSKKKCWbXJDdYcgz_eN0pP5NisI',
+    appId: '1:715141404075:android:2f568859af1fe00f356eee',
+    messagingSenderId: '715141404075',
+    projectId: 'nsrit-canteen',
+    storageBucket: 'nsrit-canteen.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDemoKeyForNSRITCanteenApp123',
     appId: '1:1234567890:ios:abcdef1234567890',
