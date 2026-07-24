@@ -20,21 +20,32 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    debugPrint('[startup] SplashScreen.initState() entered');
     if (widget.autoNavigate) {
+      debugPrint('[startup] SplashScreen starting auth navigation check');
       _checkAuthAndNavigate();
     }
   }
 
   Future<void> _checkAuthAndNavigate() async {
+    debugPrint('[startup] SplashScreen waiting before navigation');
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
+    debugPrint('[startup] SplashScreen reading AuthProvider');
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    debugPrint(
+      '[startup] SplashScreen auth state: '
+      'isLoading=${authProvider.isLoading}, '
+      'isAuthenticated=${authProvider.isAuthenticated}',
+    );
     if (authProvider.isAuthenticated) {
+      debugPrint('[startup] SplashScreen navigating to MainLayout');
       Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const MainLayout()));
     } else {
+      debugPrint('[startup] SplashScreen navigating to LoginScreen');
       Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
@@ -43,6 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('[startup] SplashScreen.build() entered');
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 

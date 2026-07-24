@@ -13,6 +13,7 @@ class InventoryItem {
   final double purchasePrice;
   final double sellingPrice;
   final String storageLocation;
+  final String imageUrl;
   final DateTime? expiryDate;
   final String notes;
   final DateTime createdAt;
@@ -36,6 +37,7 @@ class InventoryItem {
     this.purchasePrice = 0,
     this.sellingPrice = 0,
     this.storageLocation = '',
+    this.imageUrl = '',
     this.expiryDate,
     this.notes = '',
     required this.createdAt,
@@ -99,6 +101,7 @@ class InventoryItem {
     double? purchasePrice,
     double? sellingPrice,
     String? storageLocation,
+    String? imageUrl,
     DateTime? expiryDate,
     bool clearExpiryDate = false,
     String? notes,
@@ -121,6 +124,7 @@ class InventoryItem {
       purchasePrice: purchasePrice ?? this.purchasePrice,
       sellingPrice: sellingPrice ?? this.sellingPrice,
       storageLocation: storageLocation ?? this.storageLocation,
+      imageUrl: imageUrl ?? this.imageUrl,
       expiryDate: clearExpiryDate ? null : expiryDate ?? this.expiryDate,
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
@@ -147,6 +151,7 @@ class InventoryItem {
       'purchasePrice': purchasePrice,
       'sellingPrice': sellingPrice,
       'storageLocation': storageLocation,
+      'imageUrl': imageUrl,
       'expiryDate': expiryDate?.toIso8601String(),
       'notes': notes,
       'createdAt': createdAt.toIso8601String(),
@@ -177,6 +182,7 @@ class InventoryItem {
       purchasePrice: (map['purchasePrice'] as num?)?.toDouble() ?? 0.0,
       sellingPrice: (map['sellingPrice'] as num?)?.toDouble() ?? 0.0,
       storageLocation: map['storageLocation'] ?? '',
+      imageUrl: map['imageUrl'] ?? '',
       expiryDate: parseOptionalModelDate(map['expiryDate']),
       notes: map['notes'] ?? '',
       createdAt: parseModelDate(map['createdAt']),

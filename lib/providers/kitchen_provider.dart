@@ -70,12 +70,7 @@ class KitchenProvider extends ChangeNotifier {
     }
   }
 
-  List<String> get sections => const [
-    'Breakfast',
-    'Lunch',
-    'Evening Snacks',
-    'Dinner',
-  ];
+  List<String> get sections => const ['Breakfast', 'Lunch', 'Dinner'];
 
   List<MenuItemModel> menuItemsBySection(String section) {
     final query = _menuSearchQuery.toLowerCase();
@@ -144,9 +139,60 @@ class KitchenProvider extends ChangeNotifier {
     return true;
   }
 
+  Future<bool> addMenuItem(MenuItemModel item) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _kitchenService.addMenuItem(item);
+      await loadKitchenData();
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to add menu item: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> updateMenuItem(MenuItemModel item) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _kitchenService.updateMenuItem(item);
+      await loadKitchenData();
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to update menu item: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> deleteMenuItem(String id) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _kitchenService.deleteMenuItem(id);
+      await loadKitchenData();
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to delete menu item: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<PreparationPreview> buildPreparationPreview({
     required MenuItemModel menuItem,
-    required double preparationQuantity,
+    required Map<String, double> ingredientQuantities,
   }) async {
     final recipe = recipeForMenuItem(menuItem.id);
     if (recipe == null) {
@@ -155,13 +201,13 @@ class KitchenProvider extends ChangeNotifier {
     return _kitchenService.buildPreparationPreview(
       menuItem: menuItem,
       recipe: recipe,
-      preparationQuantity: preparationQuantity,
+      ingredientQuantities: ingredientQuantities,
     );
   }
 
   Future<bool> prepareMenuItem({
     required MenuItemModel menuItem,
-    required double preparationQuantity,
+    required Map<String, double> ingredientQuantities,
     required String user,
   }) async {
     _isLoading = true;
@@ -176,7 +222,7 @@ class KitchenProvider extends ChangeNotifier {
       await _kitchenService.prepareMenuItem(
         menuItem: menuItem,
         recipe: recipe,
-        preparationQuantity: preparationQuantity,
+        ingredientQuantities: ingredientQuantities,
         user: user,
       );
       await loadKitchenData();

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../constants/app_constants.dart';
 import '../models/user_model.dart';
@@ -9,8 +10,14 @@ class AuthService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Stream<UserModel?> get authStateChanges {
+    debugPrint('[startup] AuthService.authStateChanges getter entered');
     return _auth.authStateChanges().asyncMap((user) async {
+      debugPrint(
+        '[startup] FirebaseAuth authStateChanges emitted: '
+        '${user == null ? 'null' : user.email}',
+      );
       if (user == null) return null;
+      debugPrint('[startup] AuthService loading user profile: ${user.uid}');
       return _userFromFirebaseUser(user);
     });
   }
@@ -104,7 +111,11 @@ class AuthService {
 
   Future<UserModel> _userFromFirebaseUser(User user) async {
     final ref = _db.collection(AppConstants.usersCollection).doc(user.uid);
+    debugPrint('[startup] AuthService Firestore user get() starting');
     final doc = await ref.get();
+    debugPrint(
+      '[startup] AuthService Firestore user get() completed: exists=${doc.exists}',
+    );
     if (doc.exists && doc.data() != null) {
       return UserModel.fromMap(doc.data()!, doc.id);
     }

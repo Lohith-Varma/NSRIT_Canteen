@@ -15,17 +15,27 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   AuthProvider() {
+    debugPrint('[startup] AuthProvider constructor entered');
     _init();
   }
 
   void _init() {
+    debugPrint('[startup] AuthProvider subscribing to authStateChanges');
     _authService.authStateChanges.listen(
       (user) {
+        debugPrint(
+          '[startup] AuthProvider authStateChanges emitted: '
+          '${user == null ? 'null' : user.email}',
+        );
         _user = user;
         _isLoading = false;
         notifyListeners();
       },
-      onError: (Object error) {
+      onError: (Object error, StackTrace stackTrace) {
+        debugPrint('[startup] AuthProvider authStateChanges error: $error');
+        debugPrint(
+          '[startup] AuthProvider authStateChanges stack:\n$stackTrace',
+        );
         _user = null;
         _errorMessage = error.toString().replaceAll('Exception: ', '');
         _isLoading = false;

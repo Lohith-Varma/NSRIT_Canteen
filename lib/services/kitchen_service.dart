@@ -49,6 +49,43 @@ class KitchenService {
     return items;
   }
 
+  Future<void> addMenuItem(MenuItemModel item) async {
+    final ref = _db.collection(AppConstants.menuItemsCollection).doc();
+    final now = DateTime.now();
+    final itemToSave = MenuItemModel(
+      id: ref.id,
+      name: item.name,
+      section: item.section,
+      imageUrl: item.imageUrl,
+      sellingPrice: item.sellingPrice,
+      isActive: item.isActive,
+      createdAt: now,
+      updatedAt: now,
+    );
+    await ref.set(itemToSave.toMap());
+  }
+
+  Future<void> updateMenuItem(MenuItemModel item) async {
+    final updatedItem = MenuItemModel(
+      id: item.id,
+      name: item.name,
+      section: item.section,
+      imageUrl: item.imageUrl,
+      sellingPrice: item.sellingPrice,
+      isActive: item.isActive,
+      createdAt: item.createdAt,
+      updatedAt: DateTime.now(),
+    );
+    await _db
+        .collection(AppConstants.menuItemsCollection)
+        .doc(item.id)
+        .update(updatedItem.toMap());
+  }
+
+  Future<void> deleteMenuItem(String id) async {
+    await _db.collection(AppConstants.menuItemsCollection).doc(id).delete();
+  }
+
   Future<List<RecipeModel>> getRecipes() async {
     final snapshot = await _db.collection(AppConstants.recipesCollection).get();
     return snapshot.docs
@@ -100,37 +137,39 @@ class KitchenService {
   Future<PreparationPreview> buildPreparationPreview({
     required MenuItemModel menuItem,
     required RecipeModel recipe,
-    required double preparationQuantity,
+    required Map<String, double> ingredientQuantities,
   }) async {
     final inventoryItems = await _inventoryService.getInventoryItems();
     final inventoryByIngredient = <String, InventoryItem?>{};
     final requiredByIngredient = <String, double>{};
     final availableByIngredient = <String, double>{};
     final estimatedCostByIngredient = <String, double>{};
-    var canPrepare = preparationQuantity > 0;
+    var canPrepare = ingredientQuantities.values.any(
+      (quantity) => quantity > 0,
+    );
     var ingredientCost = 0.0;
 
-    for (final ingredient in recipe.ingredients) {
-      final inventoryItem = _findInventoryItem(
-        inventoryItems,
-        ingredient.ingredientName,
-      );
-      final requiredQuantity = ingredient.quantity * preparationQuantity;
+    for (final entry in ingredientQuantities.entries) {
+      final ingredientName = entry.key.trim();
+      final requiredQuantity = entry.value;
+      if (ingredientName.isEmpty) continue;
+      final inventoryItem = _findInventoryItem(inventoryItems, ingredientName);
       final availableQuantity = inventoryItem?.totalStock ?? 0.0;
       final estimatedCost = _estimateFifoCost(inventoryItem, requiredQuantity);
 
-      inventoryByIngredient[ingredient.ingredientName] = inventoryItem;
-      requiredByIngredient[ingredient.ingredientName] = requiredQuantity;
-      availableByIngredient[ingredient.ingredientName] = availableQuantity;
-      estimatedCostByIngredient[ingredient.ingredientName] = estimatedCost;
+      inventoryByIngredient[ingredientName] = inventoryItem;
+      requiredByIngredient[ingredientName] = requiredQuantity;
+      availableByIngredient[ingredientName] = availableQuantity;
+      estimatedCostByIngredient[ingredientName] = estimatedCost;
       ingredientCost += estimatedCost;
 
-      if (inventoryItem == null || availableQuantity < requiredQuantity) {
+      if (requiredQuantity > 0 &&
+          (inventoryItem == null || availableQuantity < requiredQuantity)) {
         canPrepare = false;
       }
     }
 
-    final preparationCost = recipe.preparationCostPerUnit * preparationQuantity;
+    final preparationCost = recipe.preparationCostPerUnit;
     return PreparationPreview(
       recipe: recipe,
       inventoryByIngredient: inventoryByIngredient,
@@ -147,18 +186,18 @@ class KitchenService {
   Future<void> prepareMenuItem({
     required MenuItemModel menuItem,
     required RecipeModel recipe,
-    required double preparationQuantity,
+    required Map<String, double> ingredientQuantities,
     required String user,
   }) async {
-    if (preparationQuantity <= 0) {
-      throw Exception('Preparation quantity must be greater than zero.');
+    if (!ingredientQuantities.values.any((quantity) => quantity > 0)) {
+      throw Exception('Enter quantity used for at least one ingredient.');
     }
 
     final preparationId = 'prep_${DateTime.now().millisecondsSinceEpoch}';
     final preview = await buildPreparationPreview(
       menuItem: menuItem,
       recipe: recipe,
-      preparationQuantity: preparationQuantity,
+      ingredientQuantities: ingredientQuantities,
     );
     if (!preview.canPrepare) {
       throw Exception('Insufficient inventory for ${menuItem.name}.');
@@ -168,7 +207,7 @@ class KitchenService {
       preparationId: preparationId,
       menuItem: menuItem,
       recipe: recipe,
-      preparationQuantity: preparationQuantity,
+      ingredientQuantities: ingredientQuantities,
       user: user,
     );
   }
@@ -197,7 +236,7 @@ class KitchenService {
     required String preparationId,
     required MenuItemModel menuItem,
     required RecipeModel recipe,
-    required double preparationQuantity,
+    required Map<String, double> ingredientQuantities,
     required String user,
   }) async {
     await _db.runTransaction((transaction) async {
@@ -221,15 +260,18 @@ class KitchenService {
       final lotConsumptions = <LotConsumption>[];
       var ingredientCost = 0.0;
 
-      for (final ingredient in recipe.ingredients) {
+      for (final entry in ingredientQuantities.entries) {
+        final ingredientName = entry.key.trim();
+        final requiredQuantity = entry.value;
+        if (ingredientName.isEmpty || requiredQuantity <= 0) continue;
+
         final inventoryItem = _findInventoryItem(
           inventoryItems,
-          ingredient.ingredientName,
+          ingredientName,
         );
-        final requiredQuantity = ingredient.quantity * preparationQuantity;
         if (inventoryItem == null ||
             inventoryItem.totalStock < requiredQuantity) {
-          throw Exception('Insufficient ${ingredient.ingredientName}.');
+          throw Exception('Insufficient $ingredientName.');
         }
 
         var remaining = requiredQuantity;
@@ -245,7 +287,7 @@ class KitchenService {
           lotConsumptions.add(
             LotConsumption(
               inventoryItemId: inventoryItem.id,
-              ingredientName: ingredient.ingredientName,
+              ingredientName: ingredientName,
               lotId: lot.id,
               quantity: consumed,
               unit: lot.unit,
@@ -279,22 +321,21 @@ class KitchenService {
             dateTime: DateTime.now(),
             action: 'Food Preparation',
             reference: preparationId,
-            itemName: ingredient.ingredientName,
+            itemName: ingredientName,
             quantity: -requiredQuantity,
-            unit: ingredient.unit,
+            unit: inventoryItem.unit,
             user: user,
           ).toMap(),
         );
       }
 
-      final preparationCost =
-          recipe.preparationCostPerUnit * preparationQuantity;
+      final preparationCost = recipe.preparationCostPerUnit;
       final preparedFood = PreparedFoodModel(
         id: preparationId,
         menuItemId: menuItem.id,
         menuItemName: menuItem.name,
-        quantityPrepared: preparationQuantity,
-        quantityAvailable: preparationQuantity,
+        quantityPrepared: 1,
+        quantityAvailable: 1,
         ingredientCost: ingredientCost,
         preparationCost: preparationCost,
         actualFoodCost: ingredientCost + preparationCost,
